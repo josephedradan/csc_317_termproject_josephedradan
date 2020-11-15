@@ -10,18 +10,18 @@ Please follow the instructions below and fill in the information requested when 
 
 |               | Information   |
 |:-------------:|:-------------:|
-| Student Name  | name-here     |
-| Student ID    | id-here       |
-| Student Email | email-here    |
+| Student Name  | Joseph Edradan     |
+| Student ID    | 920783419       |
+| Student Email | jedradan@mail.sfsu.edu    |
 
 
 
 # Build/Run Instructions
 
 ## Build Instructions
-1. steps here
-2. steps here
+1. install node
+2. ``npm install`` (installs dependencies)
 
 ## Run Instructions
-1. steps here
-2. steps here 
+1. ``nodemon``
+2. 127.0.0.1:8000
