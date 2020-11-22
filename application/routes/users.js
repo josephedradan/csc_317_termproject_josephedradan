@@ -7,8 +7,8 @@ router.get('/', function (req, res, next) {
 });
 
 
-router.post('/register', (req, res, next) => {
-  res.send('respond with a resource');
-})
+// router.post('/register', (req, res, next) => {
+//   res.send('respond with a resource');
+// })
 
 module.exports = router;
