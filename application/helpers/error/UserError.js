@@ -1,6 +1,6 @@
 class PostError extends Error{
     constructor(message, redirectURl, status){
-        supper(meeages);
+        super(message);
         this.redirectURl = redirectURl;
         this.status = status;
 
@@ -8,7 +8,6 @@ class PostError extends Error{
     getMessage(){
         return this.message;
     }
-
     getRedirectURL(){
         return this.getRedirectURL;
     }

@@ -88,9 +88,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // Error middleware
-app.use((err, req,res, next)=>{
+app.use((err, req, res, next) => {
     debugPrinter.errorPrint(err);
-    res.render('error', {err_message: err})
+    res.render('error', { err_message: err })
 });
 // Export
 module.exports = app;
