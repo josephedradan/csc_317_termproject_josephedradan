@@ -1,18 +1,53 @@
 #!/usr/bin/env node
 
+/*
+Created by Joseph Edradan
+Github: https://github.com/josephedradan
+
+Date created: 
+
+Purpose:
+
+Details:
+
+Description:
+
+Notes:
+  Joseph's preferred settings
+    Port: 8889
+    Address: 10.0.0.2
+
+  Running:
+    nodemon
+    nodemon --inspect app.js
+    npm run start
+
+    $env:DEBUG='csc317-termproject:server'; npm run start
+    $env:DEBUG='csc317-termproject:server'; nodemon --inspect app.js
+
+IMPORTANT NOTES:
+
+Explanation:
+
+Reference:
+
+*/
+
+
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('csc317-termproject:server');
-var http = require('http');
+const app = require('../app');
+const debug = require('debug')('csc317-termproject:server');
+const http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
+// var port = normalizePort(process.env.PORT || '8889'); // Joseph's settings
 app.set('port', port);
 
 /**
@@ -25,6 +60,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
+// server.listen(port, '10.0.0.2'); // Joseph's settings
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);

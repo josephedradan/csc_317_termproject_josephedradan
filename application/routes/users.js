@@ -1,3 +1,24 @@
+/* 
+Created by Joseph Edradan
+Github: https://github.com/josephedradan
+
+Date created: 
+
+Purpose:
+
+Details:
+
+Description:
+
+Notes:
+
+IMPORTANT NOTES:
+
+Explanation:
+
+Reference:
+
+*/
 var express = require('express');
 var router = express.Router();
 

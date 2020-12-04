@@ -1,25 +1,52 @@
+/* 
+Created by Joseph Edradan
+Github: https://github.com/josephedradan
+
+Date created: 
+
+Purpose:
+    JavaScript for the home page 
+
+Details:
+
+Description:
+
+Notes:
+
+IMPORTANT NOTES:
+
+Explanation:
+
+Reference:
+
+*/
+
 var cardCount = 0;
 
 function addElementCard(title, image, id) {
-    document.getElementById("data").insertAdjacentHTML(
+    document.getElementById("home-images").insertAdjacentHTML(
         "afterbegin",
         `
-        <section id="id${id}" class="card" onclick="fadeElement('id${id}')">
-            <div class="card_image">
-                <img id="image" src="${image}.png" />
+        <div id="id${id}" class="div-card-container" onclick="fadeElement('id${id}')">
+            <div class="card-data-container>
+                <div class="card-image-container">
+                    <img class="card-image" src="${image}.png" />
+                </div> 
+                <div class="card-info">
+                    <h3 class="title">${title}</h3>
+                    <h5 class="date">12/12/2020</h5>
+                    <h5 class="author">Author: Square</h5>
+                    <h4 class="note">Note: </h4>
+                    <h5 class="description">lolrofl</h5>
+                </div>
             </div>
-            <div class="card_info">
-                <h3 class="title">${title}</h3>
-                <h5 class="date">12/12/2020</h5>
-                <h5 class="author">Author: Square</h5>
-                <h4 class="note">Note: </h4>
-                <h5 class="description">lolrofl</h5>
-            </div>
-        </section>  
+        </div>  
         `
     );
 }
+{/* 
 
+*/}
 
 function fadeElement(elementId) {
     let element = document.getElementById(elementId);
@@ -34,7 +61,6 @@ function fadeElement(elementId) {
             removeElement(elementId);
         }
     }, 100);
-
 }
 
 function removeElement(elementId) {

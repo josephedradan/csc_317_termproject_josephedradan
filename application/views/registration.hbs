@@ -1,64 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/main_style.css">
-    <script type="text/javascript" src="javascripts/registration.js" defer></script>
-    <title>Registration</title>
-</head>
-
-<body>
-    <header>
-        <div class="header__div">
-            <h1 class="header__h1">Registration Header</h1>
-        </div>
-    </header>
-    <div class="center">
-        <form id="userForm" action="#" method="GET">
-            <fieldset>
-                <legend>Register</legend>
-                <label> Username: </label>
-                <input type="text" name="username" id="registration-username" required />
-                <div id="registration-username-validation">
-                    <p id="begins-with-character"></p>
-                    <p id="at-least-3-alphanumeric"></p>
-                </div>
-                <br />
-                <label> Email: </label>
-                <input type="email" name="email" id="registration-email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$" required />
-                <div id="registration-email-validation">
-                    <p id="valid-email"></p>
-                </div>
-                <br />
-                <label> Password: </label>
-                <input type="password" name="password-1" id="registration-password-1" required />
-                <div id="registration-password-validation">
-                    <p id="at-least-8-or-more-characters"></p>
-                    <p id="at-least-1-upper"></p>
-                    <p id="at-least-1-number"></p>
-                    <p id="at-least-1-special-character"></p>
-                </div>
-                <br />
-                <label> Confirm Password: </label>
-                <input type="password" name="password-2" id="registration-password-2" required />
-                <div id="registration-password-confirmed-validation">
-                    <p id="matching-password"></p>
-                </div>
-                <br />
-                <label> I am 13+: </label>
-                <input type="checkbox" id="checkbox-age" name="checkbox-age" value="13+" id="checkbox-age" required />
-                <br />
-                <a href="">TOS and Privacy Rules </a>
-                <br />
-                <label> Agree to TOS and Privacy Rules: </label>
-                <input type="checkbox" id="checkbox-tos" name="checkbox-tos" value="tos" id="checkbox-tos" required />
-                <br />
-                <button type="submit">Register</button>
-            </fieldset>
-        </form>
-    </div>
-</body>
-
-</html>
+<div class="box-interaction">
+    <form id="userForm" action="#" method="GET">
+        <fieldset>
+            <legend>Register</legend>
+            <label> Username: </label>
+            <input type="text" name="username" id="registration-username" required />
+            <div id="registration-username-validation">
+                <p id="begins-with-character"></p>
+                <p id="at-least-3-alphanumeric"></p>
+            </div>
+            <br />
+            <label> Email: </label>
+            <input type="email" name="email" id="registration-email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$" required />
+            <div id="registration-email-validation">
+                <p id="valid-email"></p>
+            </div>
+            <br />
+            <label> Password: </label>
+            <input type="password" name="password-1" id="registration-password-1" required />
+            <div id="registration-password-validation">
+                <p id="at-least-8-or-more-characters"></p>
+                <p id="at-least-1-upper"></p>
+                <p id="at-least-1-number"></p>
+                <p id="at-least-1-special-character"></p>
+            </div>
+            <br />
+            <label> Confirm Password: </label>
+            <input type="password" name="password-2" id="registration-password-2" required />
+            <div id="registration-password-confirmed-validation">
+                <p id="matching-password"></p>
+            </div>
+            <br />
+            <label> I am 13+: </label>
+            <input type="checkbox" id="checkbox-age" name="checkbox-age" value="13+" id="checkbox-age" required />
+            <br />
+            <a href="">TOS and Privacy Rules </a>
+            <br />
+            <label> Agree to TOS and Privacy Rules: </label>
+            <input type="checkbox" id="checkbox-tos" name="checkbox-tos" value="tos" id="checkbox-tos" required />
+            <br />
+            <button type="submit">Register</button>
+        </fieldset>
+    </form>
+</div>

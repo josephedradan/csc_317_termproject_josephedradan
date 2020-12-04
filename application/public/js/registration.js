@@ -1,3 +1,23 @@
+/* 
+Created by Joseph Edradan
+Github: https://github.com/josephedradan
+
+Date created: 
+
+Purpose:
+
+Details:
+
+Description:
+
+Notes:
+
+IMPORTANT NOTES:
+
+Explanation:
+
+Reference:
+*/
 var userUsername = document.getElementById("registration-username");
 var userUsernameValidation = document.getElementById("registration-username-validation");
 
