@@ -89,7 +89,12 @@ app.use('/users', usersRouter);
 
 // Error middleware
 app.use((err, req, res, next) => {
+    
+    // Use the debugPrinter's function errorPrint to log message to console
     debugPrinter.errorPrint(err);
+
+    // Render error page with error message
+    // TODO: error.hbs does not exist so you will get another error
     res.render('error', { err_message: err })
 });
 // Export

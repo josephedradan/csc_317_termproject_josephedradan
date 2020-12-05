@@ -27,31 +27,36 @@ router.get("/", getHome)
 router.get("/home", getHome);
 
 // GET Login page 
-router.get("/login", (req, res) => {
-  res.render("login", { title: "Login"});
+router.get("/login", (req, res, next) => {
+
+  // Throw an error...
+  // next(new Error('test'));
+
+  res.render("login", { title: "Login" });
 
 });
-router.get("/registration", (req, res) => {
-  res.render("registration", { 
-    title: "Registration", 
-    js_files:[
-      "js/registration.js"] });
+router.get("/registration", (req, res, next) => {
+  res.render("registration", {
+    title: "Registration",
+    js_files: [
+      "js/registration.js"]
+  });
 
 });
-router.get("/imagepost", (req, res) => {
+router.get("/imagepost", (req, res, next) => {
   res.render("imagepost", { title: "Image post" });
 
 });
 
-router.get("/postimage", (req, res) => {
-  res.render("postimage", {title: "Post Image"});
+router.get("/postimage", (req, res, next) => {
+  res.render("postimage", { title: "Post Image" });
 
 });
 
-function getHome(req, res){
+function getHome(req, res, next) {
   res.render("home", {
     // Order of js files matter
-    title: "Home", js_files:[
+    title: "Home", js_files: [
       "https://unpkg.com/axios/dist/axios.min.js",
       "js/home.js",
     ]
