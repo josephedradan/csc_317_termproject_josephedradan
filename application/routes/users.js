@@ -204,14 +204,18 @@ router.post("/login", async (req, res, next) => {
 
 
         // Old style
-        res.cookie("logged", db_username, {
-          expires: new Date(Date.now() + 900000),
-          // httpOnly: true,
-        });
+        // res.cookie("logged", db_username, {
+        //   expires: new Date(Date.now() + 900000),
+        //   // httpOnly: true,
+        // });
 
+        // Old won't work with redirect (won't work to begin with)
         // res.locals.logged = true;
-        // req.session.username = db_username;
-        // req.session.userid = db_id;
+        
+        // Set user as logged in
+
+        req.session.username = db_username;
+        req.session.userid = db_id;
 
         debugPrinter.successPrint(`User ${db_username} has logged in`);
 
