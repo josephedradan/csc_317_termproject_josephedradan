@@ -23,13 +23,16 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const handlebars = require("express-handlebars");
-const debugPrinter = require('./helpers/debug/debugPrinters');
+const debugPrinter = require('./helpers/debug/debug_printer');
 
 // From routes/index.js 
 const indexRouter = require('./routes/index');
 
 // From users/users.js
 const usersRouter = require('./routes/users');
+
+// Db testing
+const databaseRouter = require('./routes/database_test');
 
 // Express object
 var app = express();
@@ -85,6 +88,7 @@ app.use((req, res, next) => {
 
 // Mounted middleware
 app.use('/', indexRouter);
+app.use('/databaseTest', databaseRouter);
 app.use('/users', usersRouter);
 
 // Error middleware
@@ -95,7 +99,7 @@ app.use((err, req, res, next) => {
 
     // Render error page with error message
     // TODO: error.hbs does not exist so you will get another error
-    res.render('error', { err_message: err })
+    // res.render('error', { err_message: err })
 });
 // Export
 module.exports = app;
