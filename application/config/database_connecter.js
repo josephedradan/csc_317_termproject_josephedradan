@@ -1,3 +1,25 @@
+/* 
+Created by Joseph Edradan
+Github: https://github.com/josephedradan
+
+Date created: 
+
+Purpose:
+    Connect to MySQL Database
+    
+Details:
+
+Description:
+
+Notes:
+
+IMPORTANT NOTES:
+
+Explanation:
+
+Reference:
+
+*/
 const mysql = require('mysql2');
 
 

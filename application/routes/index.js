@@ -5,7 +5,8 @@ Github: https://github.com/josephedradan
 Date created: 
 
 Purpose:
-
+  Handle basic pages
+  
 Details:
 
 Description:
@@ -22,6 +23,8 @@ Reference:
 const express = require('express');
 const router = express.Router();
 
+// Custom printer
+const debugPrinter = require('../helpers/debug/debug_printer');
 
 /* GET home page. */
 router.get("/", getHome)
@@ -29,6 +32,7 @@ router.get("/home", getHome);
 
 // GET Login page 
 router.get("/login", (req, res, next) => {
+  // debugPrinter.routerPrint("/login");
 
   // Throw an error...
   // next(new Error('test'));
@@ -37,6 +41,8 @@ router.get("/login", (req, res, next) => {
 
 });
 router.get("/registration", (req, res, next) => {
+  // debugPrinter.routerPrint("/registration");
+
   res.render("registration", {
     title: "Registration",
     js_files: [
@@ -45,11 +51,15 @@ router.get("/registration", (req, res, next) => {
 
 });
 router.get("/imagepost", (req, res, next) => {
+  // debugPrinter.routerPrint("/imagepost");
+
   res.render("imagepost", { title: "Image post" });
 
 });
 
 router.get("/postimage", (req, res, next) => {
+  // debugPrinter.middlewarePrint("/postimage");
+
   res.render("postimage", { title: "Post Image" });
 
 });

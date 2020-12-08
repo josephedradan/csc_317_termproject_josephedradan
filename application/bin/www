@@ -25,6 +25,9 @@ Notes:
     $env:DEBUG='csc317-termproject:server'; npm run start
     $env:DEBUG='csc317-termproject:server'; nodemon --inspect app.js
 
+    npm run dev
+
+
 IMPORTANT NOTES:
 
 Explanation:

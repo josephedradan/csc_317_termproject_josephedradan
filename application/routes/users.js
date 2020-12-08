@@ -5,7 +5,7 @@ Github: https://github.com/josephedradan
 Date created: 
 
 Purpose:
-
+  Handle urls relevant to the user
 Details:
 
 Description:
@@ -21,10 +21,17 @@ Reference:
 */
 const express = require('express');
 const router = express.Router();
-const database = require('../config/database_connecter');
+const bcrypt = require("bcrypt");
+
+// Data base connecter
+const databaseConnector = require('../config/database_connecter');
+
+// Debugging printer
 const debugPrinter = require('../helpers/debug/debug_printer');
+
+// Custom user error class
 const UserError = require('../helpers/error/user_error');
-var bcrypt = require("bcrypt");
+
 
 /* GET users listing. */
 router.get('/', (req, res, next) => {
@@ -32,6 +39,7 @@ router.get('/', (req, res, next) => {
 });
 
 
+// Handle registration posting
 router.post('/register', async (req, res, next) => {
   // req Comes with a bunch of garbage
   // Body of the POST
@@ -106,13 +114,13 @@ router.post('/register', async (req, res, next) => {
   try {
 
     // Check if the Username already exists
-    let [resultsUsername, fields] = await database.execute(
+    let [resultsUsername, fields] = await databaseConnector.execute(
       "SELECT * FROM users WHERE users_username=?",
       [username]
     );
 
     // Check if the Email already exists
-    let [resultsEmail, fields2] = await database.execute(
+    let [resultsEmail, fields2] = await databaseConnector.execute(
       "SELECT * FROM users WHERE users_email=?",
       [email]
     );
@@ -140,17 +148,22 @@ router.post('/register', async (req, res, next) => {
       );
     };
 
+    // Hash password
     passwordHashed = await bcrypt.hash(password1, 10);
 
     // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES
     debugPrinter.successPrint("Executing Registration Query");
-    database.execute(baseSQlQueryInsert, [username, email, passwordHashed]);
+    databaseConnector.execute(baseSQlQueryInsert, [username, email, passwordHashed]);
     debugPrinter.successPrint(`Query Successful`);
 
-
+    // Redirect user to the login page
     res.redirect("/login");
 
-  } catch (err) {
+
+  }
+  // Catch errors
+  catch (err) {
+    // Print error caught in /registration
     debugPrinter.errorPrint("Error caught in router.post(\"/registration\", ...");
 
     // Catch UserError
@@ -158,40 +171,54 @@ router.post('/register', async (req, res, next) => {
       debugPrinter.errorPrint(err.getMessage());
       res.status(err.getStatus());
       res.redirect(err.getRedirectURL());
-
-    } else {
+      
+    } 
+    // Catch all other errors
+    else {
       debugPrinter.errorPrint(`${err}`);
+
+      // Call middleware error handler 
       next(err);
     }
   }
 });
 
+// Handle /login
 router.post("/login", async (req, res, next) => {
 
+
+  // Get both username and passowrd
   let username = req.body["username"];
   let password = req.body["password"];
 
+  // Base SQL query to get the username
   let baseSQLQuery = "SELECT users_id, users_username, users_password FROM users WHERE users_username=?;";
 
   try {
 
     // Get data from database via username
-    let [resultUserData, fields] = await database.execute(baseSQLQuery, [username]);
+    let [resultUserData, fields] = await databaseConnector.execute(baseSQLQuery, [username]);
 
     // resultUserData Exists and resultUserData.length Exists 
     if (resultUserData && resultUserData.length) {
 
+      // Get the first instance of the user (there should only be 1)
       let resultUserDataFirst = resultUserData[0];
+
+
+      if (length(resultUserData) > 1){
+        throw new Error(`There is more than 1 user with the same Username as: ${username}`);
+      }
 
       // Debug print resultUserDataFirst 
       debugPrinter.debugPrint(resultUserDataFirst);
 
       let db_id = resultUserDataFirst["users_id"];
       let db_username = resultUserDataFirst["users_username"];
-      let db_password = resultUserDataFirst["users_password"];
+      let db_password_hashed = resultUserDataFirst["users_password"];
 
       // Hash password here because it's costly to do a hash when you need to know the username first
-      let check = await bcrypt.compare(password, db_password);
+      let check = await bcrypt.compare(password, db_password_hashed);
 
       if (check) {
         // res.cookie("logged", username, { domain });
@@ -209,13 +236,13 @@ router.post("/login", async (req, res, next) => {
         //   // httpOnly: true,
         // });
 
-        // Old won't work with redirect (won't work to begin with)
+        // Old won't work with redirect (Didn't work to begin with)
         // res.locals.logged = true;
-        
+
         // Set user as logged in
 
-        req.session.username = db_username;
-        req.session.userid = db_id;
+        req.session.session_username = db_username;
+        req.session.session_user_id = db_id;
 
         debugPrinter.successPrint(`User ${db_username} has logged in`);
 
