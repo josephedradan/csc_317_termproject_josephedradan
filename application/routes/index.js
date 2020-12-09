@@ -6,7 +6,7 @@ Date created:
 
 Purpose:
   Handle basic pages
-  
+
 Details:
 
 Description:
@@ -40,6 +40,7 @@ router.get("/login", (req, res, next) => {
   res.render("login", { title: "Login" });
 
 });
+
 router.get("/registration", (req, res, next) => {
   // debugPrinter.routerPrint("/registration");
 
@@ -48,20 +49,18 @@ router.get("/registration", (req, res, next) => {
     js_files: [
       "js/registration.js"]
   });
-
 });
+
 router.get("/imagepost", (req, res, next) => {
   // debugPrinter.routerPrint("/imagepost");
 
   res.render("imagepost", { title: "Image post" });
-
 });
 
 router.get("/postimage", (req, res, next) => {
   // debugPrinter.middlewarePrint("/postimage");
 
   res.render("postimage", { title: "Post Image" });
-
 });
 
 function getHome(req, res, next) {

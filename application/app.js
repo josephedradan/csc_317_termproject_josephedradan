@@ -152,8 +152,6 @@ const mySQLSessionStore = new MySQLSession(
 
 
 
-
-
 /* 
 *** Unmounted middleware ***
 
@@ -180,10 +178,13 @@ app.use((req, res, next) => {
     debugPrinter.middlewarePrint("Request Information");
 
     // print request method
-    debugPrinter.requestPrint(req.method);
+    // debugPrinter.requestPrint(req.method);
 
     // print request url
-    debugPrinter.requestPrint(req.url);
+    // debugPrinter.requestPrint(req.url);
+
+    // Debug print method and url
+    debugPrinter.requestPrint(`${req.method}: ${req.url}`)
 
     // Call next middleware
     next();
@@ -225,7 +226,7 @@ app.use(expressSessions(
 // Must be below expressSessions
 app.use((req, res, next) => {
     debugPrinter.middlewarePrint("Express Session");
-    debugPrinter.debugPrint(req.session);
+    // debugPrinter.debugPrint(req.session);
 
     // If session.session_username exists
     if (req.session.session_username) {
@@ -243,7 +244,7 @@ Notes:
 
 */
 app.use('/', indexRouter); // app.locals.settings["/"]
-app.use('/databaseTest', databaseRouter); // app.locals.settings["/databaseTest"]
+// app.use('/databaseTest', databaseRouter); // app.locals.settings["/databaseTest"]
 app.use('/users', usersRouter); // app.locals.settings["/users"]
 
 

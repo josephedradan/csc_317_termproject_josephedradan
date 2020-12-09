@@ -19,9 +19,20 @@ Explanation:
 Reference:
 
 */
+
+/* 
+Node modules 
+
+*/
 const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcrypt");
+
+
+/* 
+Custom modules
+
+*/
 
 // Data base connecter
 const databaseConnector = require('../config/database_connecter');
@@ -31,12 +42,6 @@ const debugPrinter = require('../helpers/debug/debug_printer');
 
 // Custom user error class
 const UserError = require('../helpers/error/user_error');
-
-
-/* GET users listing. */
-router.get('/', (req, res, next) => {
-  res.send('respond with a resource');
-});
 
 
 // Handle registration posting
@@ -163,7 +168,7 @@ router.post('/register', async (req, res, next) => {
   }
   // Catch errors
   catch (err) {
-    // Print error caught in /registration
+    // Debug print error caught in /registration
     debugPrinter.errorPrint("Error caught in router.post(\"/registration\", ...");
 
     // Catch UserError
@@ -171,11 +176,11 @@ router.post('/register', async (req, res, next) => {
       debugPrinter.errorPrint(err.getMessage());
       res.status(err.getStatus());
       res.redirect(err.getRedirectURL());
-      
-    } 
+
+    }
     // Catch all other errors
     else {
-      debugPrinter.errorPrint(`${err}`);
+      // Debug print error
 
       // Call middleware error handler 
       next(err);
@@ -186,8 +191,7 @@ router.post('/register', async (req, res, next) => {
 // Handle /login
 router.post("/login", async (req, res, next) => {
 
-
-  // Get both username and passowrd
+  // Get both username and password
   let username = req.body["username"];
   let password = req.body["password"];
 
@@ -205,14 +209,15 @@ router.post("/login", async (req, res, next) => {
       // Get the first instance of the user (there should only be 1)
       let resultUserDataFirst = resultUserData[0];
 
-
-      if (length(resultUserData) > 1){
+      // Handle if there is more than 1 usr with the same name (should not exist)
+      if (resultUserData.length > 1) {
         throw new Error(`There is more than 1 user with the same Username as: ${username}`);
       }
 
       // Debug print resultUserDataFirst 
-      debugPrinter.debugPrint(resultUserDataFirst);
+      debugPrinter.debugPrint(`From Login: ${resultUserDataFirst}`);
 
+      // Assign local vars for easy use
       let db_id = resultUserDataFirst["users_id"];
       let db_username = resultUserDataFirst["users_username"];
       let db_password_hashed = resultUserDataFirst["users_password"];
@@ -221,38 +226,31 @@ router.post("/login", async (req, res, next) => {
       let check = await bcrypt.compare(password, db_password_hashed);
 
       if (check) {
-        // res.cookie("logged", username, { domain });
-
-        console.log(typeof (resultUserDataFirst))
+        // debugPrinter.debugPrint(typeof (resultUserDataFirst)); // Type is object
 
         for (const [key, value] of Object.entries(resultUserDataFirst)) {
           debugPrinter.debugPrint(`${key}: ${value}`);
         }
 
 
-        // Old style
-        // res.cookie("logged", db_username, {
-        //   expires: new Date(Date.now() + 900000),
-        //   // httpOnly: true,
-        // });
-
-        // Old won't work with redirect (Didn't work to begin with)
-        // res.locals.logged = true;
-
-        // Set user as logged in
-
+        // Set user as logged in in Sessions
         req.session.session_username = db_username;
         req.session.session_user_id = db_id;
 
+        // Assign res locals immediately (Doesn't matter since we are going to redirect to home anyways) 
+        // res.locals.session_logged = true;
+        // res.locals.session_username = req.session.session_username;
+
+        // Debug print successful login
         debugPrinter.successPrint(`User ${db_username} has logged in`);
 
         // Redirect to home
         res.redirect("/");
 
+        // Debug print
         debugPrinter.debugPrint("Stuff happens after?");
 
       } else {
-
         // Redirect to login When invalid user entry
         throw new UserError("Invalid username and/or password", "/login", 200);
         // res.redirect("/login");
@@ -270,27 +268,80 @@ router.post("/login", async (req, res, next) => {
 
     }
   } catch (err) {
+
+    // Debug print error
     debugPrinter.errorPrint("Error caught in router.post(\"/login\", ...");
 
-    // Catch UserError
+    // Handle UserError
     if (err instanceof UserError) {
       debugPrinter.errorPrint(err.getMessage());
       res.status(err.getStatus());
       res.redirect(err.getRedirectURL());
 
-    } else {
+    }
+    // Handle all other errors
+    else {
       debugPrinter.errorPrint(`${err}`);
       next(err);
     }
   }
-  // res.send(req.body);
 });
 
+/* 
+Handle /logout 
+TODO: MAKE THE CALLBACK INTO A FUNCTION
 
+Reference:
+  Authentication in Node.js - #7 Login & Logout
+    https://www.youtube.com/watch?v=BIxJEdMsCJs&t=9s
+      Notes:
+        A lot cleaner here and more advanced
+*/
+router.post('/logout', async (req, res, next) => {
+  try {
+    req.session.destroy((err) => {
 
+      // Handle errors
+      if (err) {
 
-// router.post('/register', (req, res, next) => {
-//   res.send('respond with a resource');
-// })
+        // Debug print error
+        debugPrinter.errorPrint("Session could not be destroyed.");
+        next(err);
+
+      }
+      // Hand
+      else {
+
+        // Debug print success
+        debugPrinter.successPrint("Session was destroyed");
+
+        // Clear cookies
+        res.clearCookie('csid');
+
+        // Send json status and message back to the user
+        res.json({ status: "OK", message: "use has logged out." })
+      }
+    });
+
+  } catch (err) {
+
+    // Debug print error
+    debugPrinter.errorPrint("Error caught in router.post(\"/logout\", ...");
+
+    // Handle UserError
+    if (err instanceof UserError) {
+      debugPrinter.errorPrint(err.getMessage());
+      res.status(err.getStatus());
+      res.redirect(err.getRedirectURL());
+
+    }
+    // Handle all other errors
+    else {
+      debugPrinter.errorPrint(`${err}`);
+      next(err);
+    }
+  }
+});
+
 
 module.exports = router;
