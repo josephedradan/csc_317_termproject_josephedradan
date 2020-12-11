@@ -1,0 +1,13 @@
+<div id="flash-message">
+    {{#if messages.alert_account_creation}}
+    <div class="flash-success">{{messages.alert_account_creation}}</div>
+    {{else if messages.alert_username}}
+    <div class="flash-success">Welcome: {{messages.alert_username}}</div>
+    {{else if messages.alert_user_error}}
+    <div class="flash-error">{{messages.alert_user_error}}</div>
+    {{/if}}
+
+    <script>
+        fadeThenDeleteElementByID("flash-message", 2000, 100, 0.05);
+    </script>
+</div>

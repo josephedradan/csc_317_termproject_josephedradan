@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="css/main_style.css">
+    <script type="text/javascript" src="js/pre_page_js.js" ></script>
     {{#each js_files}}
     <script defer type="text/javascript" src={{this}} ></script>
     {{/each}}
@@ -13,6 +14,9 @@
 <body>
     <div id="body-container">
     {{> header}}
+    {{!-- {{#if (emptyObjectHelper messages)}}
+        {{> flash_message}}
+    {{/if}} --}}
     {{{body}}}
     {{> footer}}
     </div>
