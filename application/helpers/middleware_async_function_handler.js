@@ -22,23 +22,36 @@ Explanation:
 Reference:
     Authentication in Node.js - #5 Error Handling
         https://www.youtube.com/watch?v=5Hpv6fLf93Q
-            Uses typeScript
-            Advanced with ambiguous calls  
+            Notes:
+                Uses typeScript
+                Advanced with ambiguous calls  
 
     Javascript - Create a Wrapper Class
         https://www.youtube.com/watch?v=1bmRVC7eiik
 
     async / await in JavaScript - What, Why and How - Fun Fun Function
         https://www.youtube.com/watch?v=568g8hxJJp4
+            Notes: 
+                Pretty good async to learn and understand async
 
     Async JS Crash Course - Callbacks, Promises, Async Await
         https://www.youtube.com/watch?v=PoRJizFvM7s
-    
+            Notes:
+                Pretty good async basics 
+
+    The Async Await Episode I Promised
+        https://www.youtube.com/watch?v=vn3tm0quoqE
+            Notes:
+                Pretty good async examples
+
     Asynchronous Vs Synchronous Programming
         https://www.youtube.com/watch?v=Kpn2ajSa92c
 
     JavaScript Async Await
         https://www.youtube.com/watch?v=V_Kr9OSfDeU
+
+    Understanding async/await on NodeJS
+        https://stackoverflow.com/questions/44512388/understanding-async-await-on-nodejs#:~:text=When%20an%20async%20function%20is%20called%2C%20it%20returns%20a%20Promise.&text=You%20can%20await%20any%20promise,alternative%20to%20classic%20JavaScript%20callbacks.
 
 */
 // Custom user error class

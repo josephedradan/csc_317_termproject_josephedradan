@@ -68,8 +68,8 @@ async function register(req, res, next) {
     // Check if the Username already exists
     const [
         rowsResultUsername,
-        fields,
-    ] = await databaseConnector.execute(
+        fields1,
+    ] = databaseConnector.execute(
         "SELECT * FROM users WHERE users_username=?",
         [username]
     );
@@ -78,10 +78,12 @@ async function register(req, res, next) {
     const [
         rowsResultEmail,
         fields2,
-    ] = await databaseConnector.execute(
+    ] = databaseConnector.execute(
         "SELECT * FROM users WHERE users_email=?",
         [email]
     );
+
+    Promise.cal
 
     // Check username exists in database then check its length
     if (rowsResultUsername && rowsResultUsername.length) {
