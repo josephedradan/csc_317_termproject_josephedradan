@@ -66,34 +66,29 @@ async function register(req, res, next) {
         "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
 
     // Check if the Username already exists
-    const [
-        rowsResultUsername,
-        fields1,
-    ] = databaseConnector.execute(
+    const promiseUsername = databaseConnector.execute(
         "SELECT * FROM users WHERE users_username=?",
         [username]
     );
 
     // Check if the Email already exists
-    const [
-        rowsResultEmail,
-        fields2,
-    ] = databaseConnector.execute(
+    const promiseEmail = databaseConnector.execute(
         "SELECT * FROM users WHERE users_email=?",
         [email]
     );
-
-    Promise.cal
+    
+    // Call promises concurrently
+    [rowsResultUsername, fields1, rowsResultEmail, fields2] = Promise.call([promiseUsername, promiseEmail])
 
     // Check username exists in database then check its length
     if (rowsResultUsername && rowsResultUsername.length) {
         let stringFailure = `Username: ${username} already exists!`;
         debugPrinter.errorPrint(stringFailure);
-        res.status(500).redirect("/registration");
+        res.status(300).redirect("/registration");
         throw new UserError(
             "Registration Failed: Username already exists",
             "/registration",
-            200
+            300
         );
     }
 
@@ -101,11 +96,11 @@ async function register(req, res, next) {
     if (rowsResultEmail && rowsResultEmail.length) {
         let stringFailure = `Email: ${email} already exists!`;
         debugPrinter.errorPrint(stringFailure);
-        res.status(500).redirect("/registration");
+        res.status(300).redirect("/registration");
         throw new UserError(
             "Registration Failed: Email is already in use!",
             "/registration",
-            200
+            300
         );
     }
 
@@ -145,7 +140,7 @@ async function login(req, res, next) {
     let username = req.body["username"];
     let password = req.body["password"];
 
-    // Get data from database via username
+    // Get data from database via username (THIS AWAIT IS LITERALLY USELESS BECAUSE IT'S SEQUENTIAL)
     const [
         rowsResultUserData,
         fields,
@@ -196,7 +191,7 @@ async function login(req, res, next) {
             // Add to flash before redirect
             // req.flash('alert_username', `${db_username}`) // await does nothing here
             debugPrinter.debugPrint(req.session);
-            
+
             // Set the last redirect for the response
             res.locals.last_redirect = "/";
 
