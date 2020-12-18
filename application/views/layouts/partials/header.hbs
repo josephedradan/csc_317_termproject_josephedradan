@@ -1,13 +1,13 @@
 <header>
-    {{!-- 
+    {{!--
 
 
     Reference:
-        Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
-            https://www.youtube.com/watch?v=PwWHL3RyQgk
-        
-        CSC 317 Term Project Log out
-            https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.be
+    Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
+    https://www.youtube.com/watch?v=PwWHL3RyQgk
+
+    CSC 317 Term Project Log out
+    https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.be
 
     --}}
     {{!-- <h1 class="header-title"></h1> --}}
@@ -18,15 +18,19 @@
         {{!-- If logged in --}}
         {{#if session_logged}}
             <li><a id="link-post-image" href="postimage">Post image</a></li>
+            <li><a id="link-username" href="home">Welcome {{session_username}}</a></li>
             <li><a id="link-logout" href="/">Log out</a></li>
 
             <script>
                 let element = document.getElementById("link-logout");
                 if (element) {
                     element.onclick = (value) => {
-                        fetch("/users/logout", { 
-                            method: "POST" 
-                        }).then((data) => {
+                        fetch(
+                            "/users/logout",
+                            {
+                                method: "POST"
+                            }
+                        ).then((data) => {
                             location.replace("/");
                         })
                     };

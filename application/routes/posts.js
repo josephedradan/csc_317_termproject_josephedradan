@@ -93,14 +93,14 @@ async function createPost(req, res, next) {
     // TODO: SERVER VALIDATION EXPRESS-VALIDATION
     // TODO: VALIDATE  [postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]
 
-    // Make a thumbnail of postPathFile and post it to 
+    // Make a thumbnail of postPathFile (Needs to be sequential)
     await sharp(postPathFile).resize(200).toFile(postPathThumbnail);
 
     // debugPrinter.errorPrint(postPathThumbnail);
     // debugPrinter.errorPrint(postPathFile);
     // debugPrinter.middlewarePrint([postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]);
 
-    // Make database query
+    // Make database query (Needs to be sequential)
     const [rowsResultInsertPost, fields] = await databaseConnector.execute(
         sqlQueryInsert,
         [postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]
@@ -115,7 +115,9 @@ async function createPost(req, res, next) {
         throw new PostError('Post could not be created!', '/postImage', 200);
     };
 
-    res.redirect("/")
+    res.locals.redirect_last = "/";
+
+    next();
 };
 
 module.exports = router;

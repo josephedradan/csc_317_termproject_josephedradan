@@ -122,7 +122,7 @@ async function register(req, res, next) {
 
     // req.flash('alert_account_creation', "Your can now log in")
 
-    res.locals.last_redirect = "/";
+    res.locals.redirect_last = "/";
     // Will probably call saveSessionThenRedirect();
     next();
 
@@ -193,7 +193,7 @@ async function login(req, res, next) {
             debugPrinter.debugPrint(req.session);
 
             // Set the last redirect for the response
-            res.locals.last_redirect = "/";
+            res.locals.redirect_last = "/";
 
             // Will probably call saveSessionThenRedirect();
             next();

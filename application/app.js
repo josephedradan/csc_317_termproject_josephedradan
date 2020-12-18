@@ -282,8 +282,8 @@ async function saveSessionThenRedirect(req, res, next) {
             next(err);
         } else {
 
-            // Get location of Redirect based on res.locals.last_redirect
-            let location = res.locals.last_redirect;
+            // Get location of Redirect based on res.locals.redirect_last
+            let location = res.locals.redirect_last;
 
             // Redirect user
             res.redirect(location);
@@ -293,8 +293,8 @@ async function saveSessionThenRedirect(req, res, next) {
     // rq.session.save() does not support promise, it's just a callback which is why you can't await i think...
     /* 
     req.session.save().then(() => {
-        // Get location of Redirect based on res.locals.last_redirect
-        let location = res.locals.last_redirect;
+        // Get location of Redirect based on res.locals.redirect_last
+        let location = res.locals.redirect_last;
 
         // Redirect user
         res.redirect(location);
