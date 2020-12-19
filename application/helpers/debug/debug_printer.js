@@ -49,9 +49,10 @@ colors.setTheme({
     error: ['white', 'bgRed'],
     success: ['white', 'bgGreen'],
     request: ['white', 'bgBlack'],
+    warning: ["black", 'bgYellow'],
     debug: ['white', 'bgBlue'],
     middleware: ['white', 'bgMagenta', 'bold'],
-    routerPrint: ["white", "bgBrightBlue"]
+    routerPrint: ["white", "bgBrightBlue"],
 })
 
 // A Debug printer for the Debug printers
@@ -101,6 +102,17 @@ const debugPrinter = {
         } else {
             console.log(colors.request(`${moment().format()}`));
             console.log(colors.request(message));
+        }
+
+    }),
+    warningPrinter: wrapperPrinter((message) => {
+
+        if (typeof message === "string") {
+            // Console log message with custom color
+            console.log(colors.warning(`${moment().format()} ${message}`));
+        } else {
+            console.log(colors.warning(`${moment().format()}`));
+            console.log(colors.warning(message));
         }
 
     }),

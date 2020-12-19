@@ -24,7 +24,7 @@ Reference:
 const debugPrinter = require('./debug/debug_printer');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
 
 // Data base connecter
 const databaseConnector = require('../config/database_connecter');

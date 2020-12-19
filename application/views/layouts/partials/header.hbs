@@ -17,25 +17,9 @@
 
         {{!-- If logged in --}}
         {{#if session_logged}}
-            <li><a id="link-post-image" href="postimage">Post image</a></li>
+            <li><a id="link-post-image" href="post-image">Post image</a></li>
             <li><a id="link-username" href="home">Welcome {{session_username}}</a></li>
-            <li><a id="link-logout" href="/">Log out</a></li>
-
-            <script>
-                let element = document.getElementById("link-logout");
-                if (element) {
-                    element.onclick = (value) => {
-                        fetch(
-                            "/users/logout",
-                            {
-                                method: "POST"
-                            }
-                        ).then((data) => {
-                            location.replace("/");
-                        })
-                    };
-                };
-            </script>
+            <li><a id="link-logout" >Log out</a></li> {{!-- No href because JS should handle that in --}}
 
         {{!-- If Logged out --}}
         {{else}}

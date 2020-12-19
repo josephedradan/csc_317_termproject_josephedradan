@@ -1,5 +1,5 @@
 class PostError extends Error {
-    constructor(message, redirectURL, status) {
+    constructor(status, message, redirectURL) {
         super(message);
         this.redirectURL = redirectURL;
         this.status = status;

@@ -54,6 +54,21 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`posts` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `csc_317_termproject`.`comments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`comments` (
+  `comments_id` INT NOT NULL AUTO_INCREMENT,
+  `comments_comment` VARCHAR(4096) NOT NULL,
+  `comments_fk_users_id` INT NOT NULL,
+  PRIMARY KEY (`comments_id`),
+  UNIQUE INDEX `comments_id_UNIQUE` (`comments_id` ASC) VISIBLE,
+  CONSTRAINT `CONSTRAINT_comments_fk_users_id_FK_users_id`
+    FOREIGN KEY (`comments_fk_users_id`)
+    REFERENCES `csc_317_termproject`.`users` (`users_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

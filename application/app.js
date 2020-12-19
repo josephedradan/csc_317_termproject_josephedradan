@@ -114,7 +114,7 @@ const handlebarHelpers = require("./helpers/handlebar_helpers");
 const mySQLPrinter = require("./helpers/my_sql_printer");
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./helpers/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("./middleware/middleware_async_function_handler");
 
 // Express object
 const app = express();
@@ -284,6 +284,8 @@ async function saveSessionThenRedirect(req, res, next) {
 
             // Get location of Redirect based on res.locals.redirect_last
             let location = res.locals.redirect_last;
+            
+            debugPrinter.debugPrint(`Redirecting User to: ${location}`);
 
             // Redirect user
             res.redirect(location);
@@ -315,6 +317,9 @@ function errorHandler(err, req, res, next) {
     // Render error page with error message
     // TODO: error.hbs does not exist so you will get another error
     // res.render('error', { err_message: err })
+
+    // VERY IMPORTANT NOTE: ALL ERRORS NOT CAUGHT BY THE DEVELOPER WILL REDIRECT TO THE HOME PAGE
+    res.redirect("/");
 }
 
 // Export app

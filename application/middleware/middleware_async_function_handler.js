@@ -55,11 +55,11 @@ Reference:
 
 */
 // Custom user error class
-const UserError = require('./error/user_error');
+const UserError = require('../helpers/error/user_error');
 
 // Custom debug printer
-const debugPrinter = require('./debug/debug_printer');
-const PostError = require('./error/post_error');
+const debugPrinter = require('../helpers/debug/debug_printer');
+const PostError = require('../helpers/error/post_error');
 
 // import RequestHandler from "express";
 
@@ -90,7 +90,7 @@ function middlewareAsyncFunctionHandler(functionGiven) {
 
         */
         try {
-            
+
             // Printer 
             debugPrinter.middlewarePrint(functionGiven.name);
 
@@ -118,22 +118,42 @@ function middlewareAsyncFunctionHandler(functionGiven) {
                 // debugPrinter.successPrint(typeof err); // Yep, it's an object 
                 // debugPrinter.successPrint(err instanceof Error); // Yep, it's an Error type
 
+
+
                 // Handle UserError
                 if (err instanceof UserError) {
+                    debugPrinter.errorPrint(err);
 
                     // Alert the user error
                     // req.flash('alert_user_error', err.getMessage());
 
-                    debugPrinter.errorPrint(err);
+                    /* 
+                    Modify the res.json for the user from the custom error (TODO: ABSTRACT THE Custom Errors)
+
+                    VERY IMPORTANT NOTE:
+                        THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
+                    */
+                    // res.json({ status: err.getStatus, message: err.getMessage, "redirect": err.getRedirectURL })
+
                     res.status(err.getStatus());
                     res.redirect(err.getRedirectURL());
 
+
+
                 } else if (err instanceof PostError) {
+                    debugPrinter.errorPrint(err);
 
                     // Alert the user error
                     // req.flash('alert_user_error', err.getMessage());
 
-                    debugPrinter.errorPrint(err);
+                    /* 
+                    Modify the res.json for the user from the custom error (TODO: ABSTRACT THE Custom Errors)
+
+                    VERY IMPORTANT NOTE:
+                        THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
+                    */
+                    // res.json({ status: err.getStatus, message: err.getMessage, "redirect": err.getRedirectURL })
+
                     res.status(err.getStatus());
                     res.redirect(err.getRedirectURL());
                 }
@@ -143,6 +163,7 @@ function middlewareAsyncFunctionHandler(functionGiven) {
                     next(err);
                 }
             });
+
             // debugPrinter.routerPrint(this);
             // debugPrinter.middlewarePrint(global);
             // debugPrinter.errorPrint(result);

@@ -4,8 +4,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {{!-- Get the styling --}}
     <link rel="stylesheet" type="text/css" href="css/main_style.css">
-    <script type="text/javascript" src="js/pre_page_js.js" ></script>
+
+
+    {{!-- Javascript to run before the page loads --}}
+    <script type="text/javascript" src="js/page_load_pre.js" ></script>
+
+    {{!-- Javascript to run after the page loads --}}
+    <script defer type="text/javascript" src="js/page_load_post.js" ></script>
+
+    {{!-- 
+    
+    Load Specific JS for the page given from index.js
+
+     --}}
     {{#each js_files}}
     <script defer type="text/javascript" src={{this}} ></script>
     {{/each}}
@@ -15,7 +29,7 @@
     <div id="body-container">
     {{> header}}
     {{!-- {{#if (emptyObjectHelper messages)}}
-        {{> flash_message}}
+        {{> flash-message}}
     {{/if}} --}}
     {{{body}}}
     {{> footer}}

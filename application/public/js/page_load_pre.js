@@ -5,6 +5,7 @@ Github: https://github.com/josephedradan
 Date created: 12/9/2020
 
 Purpose:
+    Handles js related to the page being initially loaded
 
 Details:
 
@@ -22,8 +23,10 @@ Reference:
 */
 function fadeThenDeleteElementByID(elementId, delay = 2000, speed = 100, step = 0.1) {
     /* 
-    Fade an element given the element id
-    
+    Fade an element given the element id.
+    This was originally made to handle flash js messages but I disabled flash js...
+
+
     */
     let element = document.getElementById(elementId);
 
@@ -39,9 +42,18 @@ function fadeThenDeleteElementByID(elementId, delay = 2000, speed = 100, step = 
         };
     };
 
-    let fader =()=>{
+    let fader = () => {
         setInterval(fadeElement, speed);
     }
 
     setTimeout(fader, delay);
 }
+
+
+function runPageLoadPre() {
+    /*
+    There is nothing here...
+    */
+}
+
+runPageLoadPre();

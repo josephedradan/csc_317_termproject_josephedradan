@@ -71,7 +71,11 @@ function removeElement(elementId) {
 
 }
 
-async function run() {
+function displaySize(size) {
+    document.getElementById("count-size").innerHTML = `<p>Number cards: ${size}</p>`;
+}
+
+async function runHome() {
     let response = await axios.get("https://jsonplaceholder.typicode.com/albums/2/photos");
 
     cardCount = response.data.length;
@@ -82,9 +86,4 @@ async function run() {
     });
 }
 
-
-function displaySize(size) {
-    document.getElementById("count-size").innerHTML = `<p>Number cards: ${size}</p>`;
-}
-
-run();
+// runHome();

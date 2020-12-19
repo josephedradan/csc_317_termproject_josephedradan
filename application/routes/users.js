@@ -39,7 +39,7 @@ const debugPrinter = require("../helpers/debug/debug_printer");
 const UserError = require("../helpers/error/user_error");
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../helpers/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
 
 // const mySQLPrinter = require('../helpers/my_sql_printer');
 
@@ -52,6 +52,8 @@ async function register(req, res, next) {
     debugPrinter.debugPrint(req.body);
 
     // TODO: DO VALIDATION
+
+    // Get useful data from the post request in meaningful names
     let username = req.body["username"];
     let email = req.body["email"];
     let password1 = req.body["password-1"];
@@ -59,10 +61,11 @@ async function register(req, res, next) {
     let checkAge = req.body["checkbox-age"];
     let checkTOS = req.body["checkbox-tos"];
 
+    // TODO: THIS IS THAT THING THE DATABASE THAT DOES SOMETHING IDK FIGURE IT OUT!
     // let active = 1;
 
     // Query insert
-    let baseSQlQueryInsert =
+    let baseSQLQueryInsert =
         "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
 
     // Check if the Username already exists
@@ -76,9 +79,16 @@ async function register(req, res, next) {
         "SELECT * FROM users WHERE users_email=?",
         [email]
     );
-    
+
+    debugPrinter.successPrint(promiseUsername);
+    debugPrinter.successPrint(promiseEmail);
+
     // Call promises concurrently
-    [rowsResultUsername, fields1, rowsResultEmail, fields2] = Promise.call([promiseUsername, promiseEmail])
+    [resultSQLQueryUsername, resultSQLQueryEmail] = await Promise.all([promiseUsername, promiseEmail])
+
+    // Result contains the rows from SQL query and the fields object
+    rowsResultUsername = resultSQLQueryUsername[0];
+    rowsResultEmail = resultSQLQueryEmail[0];
 
     // Check username exists in database then check its length
     if (rowsResultUsername && rowsResultUsername.length) {
@@ -107,11 +117,11 @@ async function register(req, res, next) {
     // Hash password
     passwordHashed = await bcrypt.hash(password1, 10);
 
-    // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES
+    // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES LIKE IN PYTHON
 
     let stringSuccess1 = "Executing Registration Query";
     debugPrinter.successPrint(stringSuccess1);
-    databaseConnector.execute(baseSQlQueryInsert, [
+    databaseConnector.execute(baseSQLQueryInsert, [
         username,
         email,
         passwordHashed,
@@ -120,10 +130,22 @@ async function register(req, res, next) {
     let stringSuccess2 = `Query Successful`;
     debugPrinter.successPrint(stringSuccess2);
 
+    // Flash (USE THIS IF flash DOES NOT BREAK express-sessions)
     // req.flash('alert_account_creation', "Your can now log in")
 
-    res.locals.redirect_last = "/";
-    // Will probably call saveSessionThenRedirect();
+    // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
+    res.locals.redirect_last = "/login";
+
+    /* 
+    Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
+    Modify the res.json for the user
+
+    VERY IMPORTANT NOTE:
+        THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
+    */
+    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.redirect.redirect_last })
+
+    // Call next middleware (Will probably call saveSessionThenRedirect();)
     next();
 
 }
@@ -132,6 +154,10 @@ async function register(req, res, next) {
 router.post("/login", middlewareAsyncFunctionHandler(login));
 
 async function login(req, res, next) {
+    /* 
+    Handle User login
+    
+    */
     // Base SQL query to get the username
     let SQLQueryBase =
         "SELECT users_id, users_username, users_password FROM users WHERE users_username=?;";
@@ -153,6 +179,8 @@ async function login(req, res, next) {
 
         // Handle if there is more than 1 usr with the same name (should not exist)
         if (rowsResultUserData.length > 1) {
+
+            // TODO: MAKE THIS A CUSTOM USER ERROR
             throw new Error(
                 `There is more than 1 user with the same Username as: ${username}`
             );
@@ -190,15 +218,26 @@ async function login(req, res, next) {
 
             // Add to flash before redirect
             // req.flash('alert_username', `${db_username}`) // await does nothing here
+
+            // Debug print the req.session
             debugPrinter.debugPrint(req.session);
 
-            // Set the last redirect for the response
+            // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
             res.locals.redirect_last = "/";
 
-            // Will probably call saveSessionThenRedirect();
+            /* 
+            Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
+            Modify the res.json for the user
+    
+            VERY IMPORTANT NOTE:
+            THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST ARE HANDLED BY FRONTEND JS
+            */
+            // res.json({status:200, message:"User Login was Successful!", "redirect": res.redirect.redirect_last})
+
+            // Call next middleware (Will probably call saveSessionThenRedirect();)
             next();
 
-            // Debug print
+            // Debug print (After the next call)
             // debugPrinter.debugPrint("Stuff happens after?");
             // debugPrinter.successPrint(global); // this == global
 
@@ -208,29 +247,39 @@ async function login(req, res, next) {
         // Credentials don't match
         else {
             // Redirect to login When invalid user entry
-            throw new UserError("Invalid username and/or password", "/login", 200);
+            throw new UserError(401, "Invalid username and/or password", "/login");
         }
     }
     // Account does not exist
     else {
         // Redirect to login When invalid user entry
-        throw new UserError("Invalid username and/or password", "/login", 200);
+        throw new UserError(401, "Invalid username and/or password", "/login");
     }
 }
 
-/* 
-Handle /logout 
-TODO: MAKE THE CALLBACK INTO A FUNCTION
 
-Reference:
-  Authentication in Node.js - #7 Login & Logout
-    https://www.youtube.com/watch?v=BIxJEdMsCJs&t=9s
-      Notes:
-        A lot cleaner here and more advanced
-*/
 router.post("/logout", middlewareAsyncFunctionHandler(logout));
 
 async function logout(req, res, next) {
+    /* 
+    Handle /logout 
+
+    TODO: MAKE THIS ASYNCHRONOUS USING AWAIT 
+    TODO: IF YOU MAKE MAKE IT WITH AWAIT, HOW WOULD THAT LOOK LIKE BECAUSE YOU WON'T
+    TODO: GET THAT ERROR SINCE THE ERROR WILL BE CAUGHT BY middlewareAsyncFunctionHandler
+    TODO: DO I CONTINUE TO USE A PROMISE?
+
+    IMPORTANT NOTES:
+        Logout button is handled by frontend js.
+        There is no logout page, only a button
+
+    Reference:
+        Authentication in Node.js - #7 Login & Logout
+            https://www.youtube.com/watch?v=BIxJEdMsCJs&t=9s
+            Notes:
+                A lot cleaner here and more advanced
+    */
+
     req.session.destroy((err) => {
         // Handle errors
         if (err) {
@@ -246,13 +295,16 @@ async function logout(req, res, next) {
             // Clear cookies
             res.clearCookie("csid");
 
-            // Send json status and message back to the user
+            /* 
+            Send json status and message back to the user
+
+            VERY IMPORTANT NOTES:
+                You need res.json or the fetch on the frontend js WILL HANG!
+            
+            */
             res.json({ status: "OK", message: "use has logged out." });
         }
     });
 }
-
-
-
 
 module.exports = router;

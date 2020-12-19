@@ -1,5 +1,19 @@
+{{!-- 
+
+
+
+Notes:
+    The form submit is being handled by handlerFormPost() within the postimage.js
+
+ --}}
 <div class="box-interaction">
-    <form id="post-image" class="form-grid-postimage" method ="POST" enctype="multipart/form-data" action="/posts/createPost">
+    <form 
+    id="post-image" 
+    class="form-grid-postimage"
+    method="POST" 
+    enctype="multipart/form-data"
+    {{!-- action="/posts/createPost" --}} {{!-- Prevent the default usage of this form --}}
+    >
         <fieldset>
             <legend>Post Image</legend>
             <label> Title: </label>

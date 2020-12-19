@@ -1,0 +1,18 @@
+
+{{#each rows_result_get_recent_posts_posts}}
+    <div id="id_{{this.posts_id}}" class="div-card-container">
+        <div class="card-data-container">
+            <div class="card-image-container">
+                <img class="card-image" src="{{this.posts_path_thumbnail}}" />
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">{{this.posts_title}}</h3>
+                <h5 class="card-date-created">{{this.posts_created}}</h5>
+                <h5 class="card-author">Author: {{this.users_username}}</h5>
+                <h4 class="card-description">Description: </h4>
+                <h5 class="card-description">{{this.posts_description}}</h5>
+                <a href="/post/{{this.posts_id}}" class="anchor-button">More Details</a>
+            </div>
+        </div>
+    </div>
+{{/each}}
