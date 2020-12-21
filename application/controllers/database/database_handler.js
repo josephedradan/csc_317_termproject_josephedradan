@@ -130,7 +130,7 @@ async function addUserNewToDatabase(username, email, passwordHashed) {
     return [rowsResultInsertUser, fields]
 }
 
-async function getRecentPostThumbnailsByAmount(amount) {
+async function getRecentPostThumbnailsByAmount(limit) {
     // Query Database fore recent posts
     let baseSqlQueryGetRecentPosts =
         `
@@ -143,7 +143,7 @@ async function getRecentPostThumbnailsByAmount(amount) {
     // Query the Database for the posts
     let [rowsResultGetRecentPostsPosts, fields] = await databaseConnector.execute(
         baseSqlQueryGetRecentPosts,
-        [amount]);
+        [limit]);
 
     return [rowsResultGetRecentPostsPosts, fields];
 }
@@ -152,9 +152,9 @@ async function addPostNewToDatabase(postTitle, postDescription, postPathFileRela
     // SQl Query to insert image information
     let baseSQLQueryInsertPostNew =
         `
-    INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_date_created, posts_fk_users_id) 
-    VALUES (?, ?, ?, ?, now(), ?);
-    `;
+        INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_date_created, posts_fk_users_id) 
+        VALUES (?, ?, ?, ?, now(), ?);
+        `;
 
     // Make database Insert Query (Needs to be sequential)
     let [rowsResultInsertPost, fields] = await databaseConnector.execute(
@@ -166,23 +166,30 @@ async function addPostNewToDatabase(postTitle, postDescription, postPathFileRela
 }
 
 
-async function search(termSearch) {
+async function search(termSearch, limit=10) {
+    /* 
+    The SQl query should technically match getRecentPostThumbnailsByAmount()'s SQl query
+        users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created 
+    
+    */
 
     let termSearchModified = "%" + termSearch + "%";
 
     // SQL Query to search
     let baseSQLQuerySearch =
         `
-    SELECT posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, concat_ws(' ', posts.posts_title, posts.posts_description) 
-    AS haystack     
-    FROM posts 
-    HAVING haystack like ?
-    `
+        SELECT users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created, concat_ws(' ', posts.posts_title, posts.posts_description) 
+        AS haystack     
+        FROM users
+        JOIN posts ON users.users_id=posts.posts_fk_users_id 
+        HAVING haystack like ?
+        LIMIT ?;
+        `
 
     // Make SQL Query to search
     let [rowsResultSearch, fields] = await databaseConnector.execute(
         baseSQLQuerySearch,
-        [termSearch]
+        [termSearchModified, limit]
     )
 
     return [rowsResultSearch, fields]

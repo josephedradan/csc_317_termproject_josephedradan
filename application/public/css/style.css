@@ -310,7 +310,7 @@ Home page for loading the images and stuff
 @media(min-width:1000px){
   /* For smaller screen stuff with min width */
 }
-#home-images{
+#home-cards{
   /* 
   Reference:
     Flexbox CSS In 20 Minutes

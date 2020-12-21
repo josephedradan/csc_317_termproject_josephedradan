@@ -21,6 +21,9 @@ Reference:
 
 
 */
+// Uncomment this if you want the hinting for axios (This should be uncommented for the developer)
+// const axios = require('axios');
+
 function fadeThenDeleteElementByID(elementId, delay = 2000, speed = 100, step = 0.1) {
     /* 
     Fade an element given the element id.

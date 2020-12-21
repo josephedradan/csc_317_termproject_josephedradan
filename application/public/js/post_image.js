@@ -65,25 +65,26 @@ function handlerFormPost() {
             data: form_block_body,
             method: "POST"
         })
-        .then((data) => {
+        .then((jsonData) => {
             
             // Debugging data
             // console.log("DEBUG: data")
             // console.log(data);
             
             // The data has a a Data key
-            let dataOfData = data.data;
+            let jsonDataData = jsonData.data;
             
-            // Debugging dataOfData
+            // Debugging jsonDataData
             // console.log("DEBUG: dataOfData")
             // console.log(dataOfData);
 
-            alert(dataOfData.message);
+            alert(jsonDataData.message);
 
             // Redirect the user based on the response
-            location.replace(dataOfData.redirect);
+            location.replace(jsonDataData.redirect);
 
         }).catch(err => {
+            console.log(`Error: Axios Get Error for ${handlerFormPost.name}`)
             console.log(err);
         });
     }

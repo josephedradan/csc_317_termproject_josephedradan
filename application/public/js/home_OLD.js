@@ -24,7 +24,7 @@ Reference:
 var cardCount = 0;
 
 function addElementCard(title, image, id) {
-    document.getElementById("home-images").insertAdjacentHTML(
+    document.getElementById("home-cards").insertAdjacentHTML(
         "afterbegin",
         `
         <div id="id${id}" class="div-card-container" onclick="fadeElement('id${id}')">

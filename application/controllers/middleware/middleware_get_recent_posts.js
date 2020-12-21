@@ -56,6 +56,15 @@ async function middlewareGetRecentPosts(req, res, next) {
         debugPrinter.printSuccess("Query to get Recent Posts was Successful!");
         debugPrinter.printDebug(rowsResultGetRecentPostsPosts);
 
+
+
+        // rowsResultGetRecentPostsPosts IS AN ARRAY OF OBJECTS
+        // rowsResultGetRecentPostsPosts.forEach((element, key, value) => {
+        //     debugPrinter.printSuccess(key);
+        //     debugPrinter.printSuccess(value);
+        // });
+
+
         // Add the results of the database call to the res.locals
         res.locals.rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
 

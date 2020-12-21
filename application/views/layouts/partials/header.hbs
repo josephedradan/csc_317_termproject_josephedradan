@@ -11,9 +11,14 @@
 
     --}}
     {{!-- <h1 class="header-title"></h1> --}}
-    <a class="logo" href="/home">{{title}}</a>
+    <a class="logo" href="/home">{{page_title}}</a>
     <ul class="nav-links">
         {{!-- <li><a href="home">Home</a></li> --}}
+
+
+        <input id="input-search-text" name="input-search-text" type="text">
+        <i id="button-search">asdasda</i>
+
 
         {{!-- If logged in --}}
         {{#if session_logged}}

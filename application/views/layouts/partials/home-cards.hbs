@@ -1,3 +1,11 @@
+{{!-- 
+
+Notes:
+    If the HBS code below is commented out then frontend JS is handling the rendering of the cards so I can have 1 Consistent HTML template
+    which will be inside the getHTMLHomeCards() function in page_load_post.js in the frontend js sent to the user.
+
+ --}}
+
 {{#each rows_result_get_recent_posts_posts}}
     {{!-- Every post can be individually identified via id_NUMBER --}}
     <div id="id_{{this.posts_id}}" class="card-container-parent">

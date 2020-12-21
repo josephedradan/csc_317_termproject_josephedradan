@@ -57,7 +57,7 @@ async function middlewarePageLogin(req, res, next) {
     res.render(
         "login",
         {
-            title: "Login"
+            page_title: "Login"
         });
 
 };
@@ -70,7 +70,7 @@ function middlewarePageRegistration(req, res, next) {
     res.render(
         "registration",
         {
-            title: "Registration",
+            page_title: "Registration",
             js_files:
                 [
                     "/js/registration.js"
@@ -79,16 +79,16 @@ function middlewarePageRegistration(req, res, next) {
 };
 
 
-// Route for image-post
-// router.get("/image-post", getPageImagePost);
+// Route for image-post (Old post)
+routerIndex.get("/image-post", getPageImagePost);
 
-// function getPageImagePost(req, res, next) {
-//     res.render(
-//         "image-post",
-//         {
-//             title: "Image post"
-//         });
-// };
+function getPageImagePost(req, res, next) {
+    res.render(
+        "image-post",
+        {
+            page_title: "Image post"
+        });
+};
 
 
 // Route Protection (Prevents user from accessing a page, specifically post-image)
@@ -100,7 +100,7 @@ function middlewarePagePostImage(req, res, next) {
     res.render(
         "post-image",
         {
-            title: "Post Image",
+            page_title: "Post Image",
             js_files:
                 [
                     "https://unpkg.com/axios/dist/axios.min.js",
@@ -114,12 +114,12 @@ function middlewarePageHome(req, res, next) {
         "home",
         {
             // Order of js files matter
-            title: "Home",
+            page_title: "Home",
             js_files:
                 [
                     "https://unpkg.com/axios/dist/axios.min.js",
                     // "/js/home_OLD.js",
-                ]
+                ],
         });
 }
 

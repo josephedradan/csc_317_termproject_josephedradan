@@ -97,7 +97,7 @@ function asyncFunctionHandler(functionGiven, debugPrinterFunction = "printMiddle
             debugPrinter[debugPrinterFunction](functionGiven.name);
 
             /* 
-            Call original function and catch error
+            Call original function and explicitly catch error
 
             Notes:
                 Do not use .then(), ONLY .catch()
@@ -116,6 +116,7 @@ function asyncFunctionHandler(functionGiven, debugPrinterFunction = "printMiddle
             Alternative:
                 return (...args).catch((err) => {
             */
+            
             let resultsFunctionCall = functionGiven(...args)
                 .catch((err) => {
                     debugPrinter.printError("Asynchronous Error Caught!");

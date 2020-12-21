@@ -180,33 +180,43 @@ async function createPost(req, res, next) {
 };
 
 
-routerPosts.post('/search', asyncFunctionHandler(search))
+routerPosts.get('/search', asyncFunctionHandler(search))
 
 async function search(req, res, next) {
+    /* 
+    Allow searching on website
+    
+    */
+    let textTermSearched = req.query.search;
 
-    let termSearch = req.query.search;
+    debugPrinter.printSuccess(textTermSearched);
 
-    if (!termSearch) {
+    if (!textTermSearched) {
         // No search
         res.send({
             resultsStatus: "info",
             message: "No search term given.",
-            results: []
+            resultsSearch: []
         });
     } else {
-        // Search found
-        let [rowsResultSearch, fields] = await databaseHandler.search(termSearch);
-        
+
+        // Query Database given search term
+        let [rowsResultSearch, fields] = await databaseHandler.search(textTermSearched);
+
+        // Search results found
         if (rowsResultSearch.length) {
             res.send({
                 message: `${rowsResultSearch.length} results found`,
-                results: rowsResultSearch
+                resultsSearch: rowsResultSearch
             });
-        } else {
+        } 
+
+        // No search results found so give recent posts instead
+        else {
             let [rowsResultGetRecentPostsPosts, fields] = await databaseHandler.getRecentPostThumbnailsByAmount(10);
             res.send({
                 message: "No results where found for your search but here are the 10 most recent posts",
-                results: rowsResultGetRecentPostsPosts
+                resultsSearch: rowsResultGetRecentPostsPosts
             });
         }
     }
