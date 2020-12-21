@@ -5,7 +5,7 @@ Github: https://github.com/josephedradan
 Date created: 
 
 Purpose:
-
+    Some helper to check if its keys are empty, i forgot what this file is used for
 Details:
 
 Description:
@@ -26,7 +26,7 @@ Reference:
 */
 
 // Debugging printer
-const debugPrinter = require('./debug/debug_printer');
+const debugPrinter = require('../debug/debug_printer');
 
 
 function emptyObject(object){

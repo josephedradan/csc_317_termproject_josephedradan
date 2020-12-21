@@ -27,7 +27,7 @@ const sharp = require('sharp');
 const multer = require('multer');
 const crypto = require('crypto');
 
-// Data base connecter
+// Database connecter
 const databaseConnector = require('../config/database_connecter');
 
 // Custom user error class

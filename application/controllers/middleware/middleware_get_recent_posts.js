@@ -27,8 +27,9 @@ Reference:
 */
 
 
-// Data base connecter
+// Database connecter
 const databaseConnector = require("../config/database_connecter");
+const databaseHandler = require("../database/database_handler");
 
 // Debugging printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -43,20 +44,9 @@ postMiddleware.getRecentPosts = getRecentPosts;
 
 async function getRecentPosts(req, res, next) {
 
-    // Query Database fore recent posts
-    let baseSqlQueryGetRecentPosts =
-        `
-        SELECT users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created 
-        FROM users 
-        JOIN posts ON users.users_id=posts.posts_fk_users_id 
-        ORDER BY posts.posts_date_created DESC LIMIT ?;
-        `
 
     // Query the Database for the posts
-    let [rowsResultGetRecentPostsPosts, fields] = await databaseConnector.execute(
-        baseSqlQueryGetRecentPosts,
-        [10]);
-
+    let [rowsResultGetRecentPostsPosts, fields] = await databaseHandler.getRecentPostThumbnailsByAmount(10);
 
     if (rowsResultGetRecentPostsPosts && rowsResultGetRecentPostsPosts.length == 0) {
 
@@ -68,7 +58,7 @@ async function getRecentPosts(req, res, next) {
     } else {
 
         // Print the results of the database query
-        debugPrinter.warningPrinter("Query to get Recent Posts was Successful!");
+        debugPrinter.successPrint("Query to get Recent Posts was Successful!");
         debugPrinter.debugPrint(rowsResultGetRecentPostsPosts);
 
         // Add the results of the database call to the res.locals

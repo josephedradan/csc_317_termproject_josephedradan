@@ -12,7 +12,9 @@ Details:
 Description:
 
 Notes:
-
+    WHY DID I MAKE THIS A MIDDLEWARE???????
+    WHAT IS THE POINT OF THIS FILE, FIXME 
+    
 IMPORTANT NOTES:
 
 Explanation:
@@ -21,13 +23,13 @@ Reference:
 
 */
 // Debugging printer
-const debugPrinter = require('./debug/debug_printer');
+const debugPrinter = require('./debug_printer');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("../../middleware/middleware_async_function_handler");
 
-// Data base connecter
-const databaseConnector = require('../config/database_connecter');
+// Database connecter
+const databaseConnector = require('../../config/database_connecter');
 
 async function printSessions() {
     /* 

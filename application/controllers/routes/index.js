@@ -23,8 +23,11 @@ Reference:
 const express = require('express');
 const router = express.Router();
 
-// Data base connecter
-const databaseConnector = require('../config/database_connecter');
+// Database connecter
+// const databaseConnector = require('../config/database_connecter');
+
+// Database Handler
+const databaseHandler = require('../database/database_handler')
 
 // Debug printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -115,7 +118,7 @@ function getPageHome(req, res, next) {
             js_files:
                 [
                     "https://unpkg.com/axios/dist/axios.min.js",
-                    // "/js/home.js",
+                    // "/js/home_OLD.js",
                 ]
         });
 }
@@ -138,45 +141,19 @@ async function getPagePost(req, res, next) {
                     Also there is regex in :id(\\d+)
     */
 
-    // SQL Query to get post id
-    let baseSQLQueryGetPostFromPostID =
-        `
-        SELECT users.users_id, users.users_username, posts.posts_title, posts.posts_description, 
-        posts.posts_path_file, posts.posts_date_created 
-        FROM users 
-        JOIN posts ON users.users_id=posts.posts_fk_users_id WHERE posts.posts_id=?;
-        `;
-
     // Get post ID from url
     let post_id = req.params.post_id;
-
-    // Get Post from post_id
-    let [resultsSQLPostID, fields] = await databaseConnector.query(
-        baseSQLQueryGetPostFromPostID,
-        [post_id]);
     
+    // Get Post from post_id
+    let [resultsSQLPostID, fields] = await databaseHandler.getPostFromPostID(post_id);
+
     // Post object
     let postObject = resultsSQLPostID[0];
         
     if (resultsSQLPostID && resultsSQLPostID.length) {
 
-        // SQL Query to get post ID
-        let baseSQLQueryGetCommentsFromPostID =
-            `
-            SELECT users.users_username, posts.posts_id, comments.comments_comment, comments.comments_date_created 
-            FROM posts
-            JOIN comments
-            JOIN users
-            ON users.users_id=comments.comments_fk_users_id 
-            ON posts.posts_id=comments.comments_fk_posts_id 
-            WHERE posts.posts_id=?
-            ORDER BY comments.comments_date_created DESC    
-            `;
-
         // Get Post from post_id
-        let [rowsResultPostIDComments, fields2] = await databaseConnector.query(
-            baseSQLQueryGetCommentsFromPostID,
-            [post_id]);
+        let [rowsResultPostIDComments, fields2] = await databaseHandler.getCommentsFromPostID(post_id);
 
         res.render(
             "post",

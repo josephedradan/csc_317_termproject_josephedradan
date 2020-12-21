@@ -29,8 +29,11 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-// Data base connecter
-const databaseConnector = require("../config/database_connecter");
+// Database connecter
+// const databaseConnector = require("../config/database_connecter");
+
+// Database Handler
+const databaseHandler = require('../database/database_handler')
 
 // Debugging printer
 const debugPrinter = require("../helpers/debug/debug_printer");
@@ -65,20 +68,14 @@ async function register(req, res, next) {
     // let active = 1;
 
     // Query insert
-    let baseSQLQueryInsert =
-        "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
+    // let baseSQLQueryInsert =
+    //     "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
 
     // Check if the Username already exists
-    const promiseUsername = databaseConnector.execute(
-        "SELECT * FROM users WHERE users_username=?",
-        [username]
-    );
+    const promiseUsername = databaseHandler.getUserDataAllFromUsername(username);
 
     // Check if the Email already exists
-    const promiseEmail = databaseConnector.execute(
-        "SELECT * FROM users WHERE users_email=?",
-        [email]
-    );
+    const promiseEmail = databaseHandler.getEmailDataAllFromEmail(email);
 
     debugPrinter.successPrint(promiseUsername);
     debugPrinter.successPrint(promiseEmail);
@@ -121,11 +118,12 @@ async function register(req, res, next) {
 
     let stringSuccess1 = "Executing Registration Query";
     debugPrinter.successPrint(stringSuccess1);
-    databaseConnector.execute(baseSQLQueryInsert, [
-        username,
-        email,
-        passwordHashed,
-    ]);
+    // databaseConnector.execute(baseSQLQueryInsert, [
+    //     username,
+    //     email,
+    //     passwordHashed,
+    // ]);
+    databaseHandler.addUserNewToDatabase(username, email, passwordHashed);
 
     let stringSuccess2 = `Query Successful`;
     debugPrinter.successPrint(stringSuccess2);
@@ -158,23 +156,13 @@ async function login(req, res, next) {
     Handle User login
     
     */
-    // Base SQL query to get the username
-    let baseSQLQueryBase =
-        `
-        SELECT users_id, users_username, users_password 
-        FROM users 
-        WHERE users_username=?;
-        `;
 
     // Get both username and password
     let username = req.body["username"];
     let password = req.body["password"];
 
     // Get data from database via username (THIS AWAIT IS LITERALLY USELESS BECAUSE IT'S SEQUENTIAL)
-    const [
-        rowsResultUserData,
-        fields,
-    ] = await databaseConnector.execute(baseSQLQueryBase, [username]);
+    const [rowsResultUserData, fields] = await databaseHandler.getUserDataSimpleFromUsername(username);
 
     // resultUserData Exists and resultUserData.length Exists
     if (rowsResultUserData && rowsResultUserData.length) {

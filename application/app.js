@@ -109,9 +109,9 @@ const routerDatabase = require("./controllers/routes/database_test"); // Db test
 // Custom printer
 const debugPrinter = require("./controllers/helpers/debug/debug_printer");
 
-const handlebarHelpers = require("./controllers/helpers/handlebar_helpers");
+const handlebarHelpers = require("./controllers/helpers/handlebars_helpers/handlebars_helper");
 
-const mySQLPrinter = require("./controllers/helpers/my_sql_printer");
+const mySQLPrinter = require("./controllers/helpers/debug/my_sql_printer");
 
 // Asynchronous Function Middleware Handler
 const middlewareAsyncFunctionHandler = require("./controllers/middleware/middleware_async_function_handler");
