@@ -12,7 +12,7 @@ Description:
 
 Notes:
 
-    let sqlQueryInsert = `
+    let baseSQLQueryInsert = `
     INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_created, posts_fk_users_id) 
     VALUES (?, ?, ?, ?, now(), ?);
     `;
@@ -34,7 +34,7 @@ const databaseConnector = require("../config/database_connecter");
 const debugPrinter = require('../helpers/debug/debug_printer');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("./middleware_async_function_handler");
 
 const postMiddleware = {};
 
@@ -42,12 +42,15 @@ const postMiddleware = {};
 postMiddleware.getRecentPosts = getRecentPosts;
 
 async function getRecentPosts(req, res, next) {
-    // let baseSQL =
-    // "SELECT id, title, description, thumbnail, created FROM posts ORDER BY created DESC LIMIT 10";
-    let baseSqlQueryGetRecentPosts = `
-    SELECT users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_created 
-    FROM users JOIN posts ON users.users_id=posts.posts_fk_users_id ORDER BY posts.posts_created DESC LIMIT ?;
-    `
+
+    // Query Database fore recent posts
+    let baseSqlQueryGetRecentPosts =
+        `
+        SELECT users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created 
+        FROM users 
+        JOIN posts ON users.users_id=posts.posts_fk_users_id 
+        ORDER BY posts.posts_date_created DESC LIMIT ?;
+        `
 
     // Query the Database for the posts
     let [rowsResultGetRecentPostsPosts, fields] = await databaseConnector.execute(

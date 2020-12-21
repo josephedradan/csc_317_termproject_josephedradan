@@ -45,9 +45,9 @@ const multerStorage = multer.diskStorage({
 
     // Add an new key called destination
     destination: (req, file, cb) => {
-        
+
         // Image upload location
-        let pathImageFileUploadLocation =  "public/images/uploads"
+        let pathImageFileUploadLocation = "public/images/uploads"
 
         cb(null, pathImageFileUploadLocation)
     },
@@ -71,12 +71,6 @@ router.post('/createPost', uploader.single("post_file"), middlewareAsyncFunction
 async function createPost(req, res, next) {
     debugPrinter.debugPrint(req.file);
 
-    // SQl Query to insert image information
-    let sqlQueryInsert = `
-    INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_created, posts_fk_users_id) 
-    VALUES (?, ?, ?, ?, now(), ?);
-    `;
-
     // Get the file path
     let postPathFileTemp = req.file.path;
 
@@ -90,15 +84,15 @@ async function createPost(req, res, next) {
         Must replace "public" with ".."
 
     */
-    let postPathFileUser = postPathFileTemp.replace("public/", "");
-    
+    let postPathFileRelative = postPathFileTemp.replace("public", "");
+
     // Acutal file path on server
     let postPathFile = postPathFileTemp;
 
     // Get the filename for the thumbnail
     let postThumbnailName = `thumbnail-${req.file.filename}`
 
-    
+
     // Get the path of the thumbnail
     let postPathThumbnailTemp = req.file.destination;
 
@@ -108,7 +102,7 @@ async function createPost(req, res, next) {
     Notes: 
         Must replace "public" with ".."
     */
-    let postPathThumbnailUser = postPathThumbnailTemp.replace("public/", "") + "/" + postThumbnailName;
+    let postPathThumbnailRelative = postPathThumbnailTemp.replace("public", "") + "/" + postThumbnailName;
 
     // Acutal file path on server
     let postPathThumbnail = postPathThumbnailTemp + "/" + postThumbnailName;
@@ -131,36 +125,87 @@ async function createPost(req, res, next) {
     // debugPrinter.successPrint(postPathThumbnail);
     // debugPrinter.successPrint(postPathFile);
     // debugPrinter.successPrint([postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]);
-    debugPrinter.successPrint(postPathFileUser);
-    debugPrinter.successPrint(postPathThumbnailUser);
+    debugPrinter.successPrint(postPathFileRelative);
+    debugPrinter.successPrint(postPathThumbnailRelative);
+
+    // SQl Query to insert image information
+    let baseSQLQueryInsert =
+        `
+    INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_date_created, posts_fk_users_id) 
+    VALUES (?, ?, ?, ?, now(), ?);
+
+    `;
 
     // Make database Insert Query (Needs to be sequential)
     const [rowsResultInsertPost, fields] = await databaseConnector.execute(
-        sqlQueryInsert,
-        [postTitle, postDescription, postPathFileUser, postPathThumbnailUser, fk_user_id]
+        baseSQLQueryInsert,
+        [postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id]
     )
 
-    // debugPrinter.debugPrint(rowsResultInsertPost);
+    debugPrinter.routerPrint(rowsResultInsertPost);
 
     // Check if Insert query was successful in being uploaded to the database
     if (rowsResultInsertPost && rowsResultInsertPost.affectedRows) {
-        debugPrinter.successPrint(`Image uploaded by ${req.session.session_username} was successful!`);
+        debugPrinter.successPrint(`File uploaded by ${req.session.session_username} was successful!`);
     } else {
 
         // The below should be handled by middlewareAsyncFunctionHandler buy 
         // res.json({status:"OK", message:"Post was not Successful!", redirect: res.redirect.redirect_last})
 
-        throw new PostError(400, 'User Post request (Post image) was not Successful!', '/postImage');
+        throw new PostError(400, `File uploaded by ${req.session.session_username} was not Successful!`, '/postImage');
     };
 
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
     res.locals.redirect_last = "/";
-    
+
+    /* 
+    Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
+    Modify the res.json for the user
+
+    VERY IMPORTANT NOTE:
+        THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST ARE HANDLED BY FRONTEND JS
+    */
     // Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
-    res.json({status:200, message:"User Post request (Post image) was Successful!", "redirect": res.redirect.redirect_last})
+    res.json({
+        status: 200,
+        message: `${req.session.session_username} your upload successful!`,
+        "redirect": res.locals.redirect_last
+    })
 
     // Call next middleware (Will probably call saveSessionThenRedirect();)
-    next();
+    // next();
 };
+
+
+router.post('/search', search)
+
+async function search(req, res, next) {
+
+    let termSearch = req.query.search;
+
+    if (!termSearch) {
+        // No search found
+        res.send({
+            resultsStatus: "info",
+            message: "No search term given.",
+            results: []
+        });
+    } else {
+        // Search found
+        let results = await PostModel.search(termSearch);
+        if (results.length) {
+            res.send({
+                message: `${results.length} results found`,
+                results: results
+            });
+        } else {
+            let results = await PostModel.getNRecentPosts(10);
+            res.send({
+                message: "No results where found for your search but here are the 10 most recent posts",
+                results: results
+            });
+        }
+    }
+}
 
 module.exports = router;

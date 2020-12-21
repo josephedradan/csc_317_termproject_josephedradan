@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     {{!-- Get the styling --}}
-    <link rel="stylesheet" type="text/css" href="css/main_style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
 
 
     {{!-- Javascript to run before the page loads --}}
-    <script type="text/javascript" src="js/page_load_pre.js" ></script>
+    <script type="text/javascript" src="/js/page_load_pre.js" ></script>
 
     {{!-- Javascript to run after the page loads --}}
-    <script defer type="text/javascript" src="js/page_load_post.js" ></script>
+    <script defer type="text/javascript" src="/js/page_load_post.js" ></script>
 
     {{!-- 
     
@@ -21,18 +21,25 @@
 
      --}}
     {{#each js_files}}
-    <script defer type="text/javascript" src={{this}} ></script>
+        <script defer type="text/javascript" src={{this}} ></script>
     {{/each}}
+
     <title>{{title}}</title>
 </head>
 <body>
-    <div id="body-container">
-    {{> header}}
-    {{!-- {{#if (emptyObjectHelper messages)}}
-        {{> flash-message}}
-    {{/if}} --}}
-    {{{body}}}
-    {{> footer}}
+    <div id="body-container" class="div-standard">
+        <div id="body-container-header">
+            {{> header}}
+        </div>
+        <div id="body-container-body" class="div-standard">
+            {{!-- {{#if (emptyObjectHelper messages)}}
+                {{> flash-message}}
+            {{/if}} --}}
+            {{{body}}}
+        </div>
+        <div id="body-container-footer" >
+            {{> footer}}
+        </div>
     </div>
 </body>
 </html>

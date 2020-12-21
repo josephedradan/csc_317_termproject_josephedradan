@@ -21,7 +21,7 @@ Reference:
 
 */
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("./middleware_async_function_handler");
 
 // Debugging printer
 const debugPrinter = require("../helpers/debug/debug_printer");

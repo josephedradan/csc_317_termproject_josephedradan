@@ -35,9 +35,9 @@ async function printSessions() {
     
     */
 
-    let SQLQuery = "SELECT * FROM sessions;";
+    let baseSQLQuery = "SELECT * FROM sessions;";
 
-    let [dbData, fields] = await databaseConnector.execute(SQLQuery);
+    let [dbData, fields] = await databaseConnector.execute(baseSQLQuery);
 
     dbData.forEach(element => {
         debugPrinter.debugPrint(element);

@@ -143,7 +143,7 @@ async function register(req, res, next) {
     VERY IMPORTANT NOTE:
         THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
     */
-    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.redirect.redirect_last })
+    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.locals.redirect_last })
 
     // Call next middleware (Will probably call saveSessionThenRedirect();)
     next();
@@ -159,8 +159,12 @@ async function login(req, res, next) {
     
     */
     // Base SQL query to get the username
-    let SQLQueryBase =
-        "SELECT users_id, users_username, users_password FROM users WHERE users_username=?;";
+    let baseSQLQueryBase =
+        `
+        SELECT users_id, users_username, users_password 
+        FROM users 
+        WHERE users_username=?;
+        `;
 
     // Get both username and password
     let username = req.body["username"];
@@ -170,7 +174,7 @@ async function login(req, res, next) {
     const [
         rowsResultUserData,
         fields,
-    ] = await databaseConnector.execute(SQLQueryBase, [username]);
+    ] = await databaseConnector.execute(baseSQLQueryBase, [username]);
 
     // resultUserData Exists and resultUserData.length Exists
     if (rowsResultUserData && rowsResultUserData.length) {
@@ -232,7 +236,7 @@ async function login(req, res, next) {
             VERY IMPORTANT NOTE:
             THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST ARE HANDLED BY FRONTEND JS
             */
-            // res.json({status:200, message:"User Login was Successful!", "redirect": res.redirect.redirect_last})
+            // res.json({status:200, message:"User Login was Successful!", "redirect": res.locals.redirect_last})
 
             // Call next middleware (Will probably call saveSessionThenRedirect();)
             next();

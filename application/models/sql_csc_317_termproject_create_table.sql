@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`users` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
+-- -------------------------------------------users----------
 -- Table `csc_317_termproject`.`posts`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`posts` (
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`posts` (
   `posts_path_file` VARCHAR(4096) NOT NULL,
   `posts_path_thumbnail` VARCHAR(4096) NOT NULL,
   `posts_active` INT NOT NULL DEFAULT 0,
-  `posts_created` DATETIME NOT NULL,
+  `posts_date_created` DATETIME NOT NULL,
   `posts_fk_users_id` INT NOT NULL,
   PRIMARY KEY (`posts_id`),
   UNIQUE INDEX `posts_id_UNIQUE` (`posts_id` ASC) VISIBLE,
@@ -60,12 +60,21 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`comments` (
   `comments_id` INT NOT NULL AUTO_INCREMENT,
   `comments_comment` VARCHAR(4096) NOT NULL,
+  `comments_date_created` DATETIME NOT NULL,
   `comments_fk_users_id` INT NOT NULL,
+  `comments_fk_posts_id` INT NOT NULL,
   PRIMARY KEY (`comments_id`),
   UNIQUE INDEX `comments_id_UNIQUE` (`comments_id` ASC) VISIBLE,
+  INDEX `comments_fk_users_id_FK_users_id` (`comments_fk_users_id` ASC) VISIBLE,
   CONSTRAINT `CONSTRAINT_comments_fk_users_id_FK_users_id`
     FOREIGN KEY (`comments_fk_users_id`)
     REFERENCES `csc_317_termproject`.`users` (`users_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  INDEX `comments_fk_posts_id_FK_users_id` (`comments_fk_posts_id` ASC) VISIBLE,
+  CONSTRAINT `CONSTRAINT_comments_fk_posts_id_FK_posts_id`
+    FOREIGN KEY (`comments_fk_posts_id`)
+    REFERENCES `csc_317_termproject`.`posts` (`posts_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;

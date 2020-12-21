@@ -42,7 +42,7 @@ function handlerFormPost() {
         //     alert(message);
         //     console.log(data);
 
-        //     // FIXME: Crashes here (don't have a way to fix)
+        //     // FIXME: Crashes here (don't have a way to fix, just use AXIOS)
         //     return data.json();
         // }).then((dataAsObject) => {
         //     let message = "Data is a json object";
@@ -66,23 +66,22 @@ function handlerFormPost() {
             method: "POST"
         })
         .then((data) => {
-            let message = "Post Submission was Successful!";
-            console.log(message);
-            alert(message);
             
             // Debugging data
-            console.log("This is the data")
-            console.log(data);
+            // console.log("DEBUG: data")
+            // console.log(data);
             
             // The data has a a Data key
             let dataOfData = data.data;
             
-            // Debugging Data within Data
-            console.log("This is the dataOfData")
-            console.log(dataOfData);
-            
+            // Debugging dataOfData
+            // console.log("DEBUG: dataOfData")
+            // console.log(dataOfData);
+
+            alert(dataOfData.message);
+
             // Redirect the user based on the response
-            // location.replace(dataOfData.redirect);
+            location.replace(dataOfData.redirect);
 
         }).catch(err => {
             console.log(err);

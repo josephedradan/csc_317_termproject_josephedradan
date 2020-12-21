@@ -11,20 +11,20 @@
 
     --}}
     {{!-- <h1 class="header-title"></h1> --}}
-    <a class="logo" href="home">{{title}}</a>
+    <a class="logo" href="/home">{{title}}</a>
     <ul class="nav-links">
         {{!-- <li><a href="home">Home</a></li> --}}
 
         {{!-- If logged in --}}
         {{#if session_logged}}
-            <li><a id="link-post-image" href="post-image">Post image</a></li>
-            <li><a id="link-username" href="home">Welcome {{session_username}}</a></li>
+            <li><a id="link-post-image" href="/post-image">Post image</a></li>
+            <li><a id="link-username" href="/home">Welcome {{session_username}}</a></li>
             <li><a id="link-logout" >Log out</a></li> {{!-- No href because JS should handle that in --}}
 
         {{!-- If Logged out --}}
         {{else}}
-            <li><a id="link-registration" href="registration">Registration</a></li>
-            <li><a id="link-login" href="login">Log in</a></li>
+            <li><a id="link-registration" href="/registration">Registration</a></li>
+            <li><a id="link-login" href="/login">Log in</a></li>
         {{/if}}
 
         {{!-- <li><a href="imagepost">Image Post</a></li> --}}

@@ -101,20 +101,20 @@ const expressSessions = require("express-session");
 const MySQLSession = require("express-mysql-session")(expressSessions);
 // const expressFlash = require('express-flash'); // Buggy with express-sessions
 
-const routerIndex = require("./routes/index"); // From routes/index.js
-const routerUsers = require("./routes/users"); // From users/users.js
-const routerPosts = require("./routes/posts");
-const routerDatabase = require("./routes/database_test"); // Db testing TODO: FIXME
+const routerIndex = require("./controllers/routes/index"); // From routes/index.js
+const routerUsers = require("./controllers/routes/users"); // From users/users.js
+const routerPosts = require("./controllers/routes/posts");
+const routerDatabase = require("./controllers/routes/database_test"); // Db testing TODO: FIXME
 
 // Custom printer
-const debugPrinter = require("./helpers/debug/debug_printer");
+const debugPrinter = require("./controllers/helpers/debug/debug_printer");
 
-const handlebarHelpers = require("./helpers/handlebar_helpers");
+const handlebarHelpers = require("./controllers/helpers/handlebar_helpers");
 
-const mySQLPrinter = require("./helpers/my_sql_printer");
+const mySQLPrinter = require("./controllers/helpers/my_sql_printer");
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./middleware/middleware_async_function_handler");
+const middlewareAsyncFunctionHandler = require("./controllers/middleware/middleware_async_function_handler");
 
 // Express object
 const app = express();
@@ -158,7 +158,7 @@ const mySQLSessionStore = new MySQLSession(
     {
         /* Using default options */
     },
-    require("./config/database_connecter")
+    require("./controllers/config/database_connecter")
 );
 
 /* 
