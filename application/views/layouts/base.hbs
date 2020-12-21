@@ -32,9 +32,9 @@
             {{> header}}
         </div>
         <div id="body-container-body" class="div-standard">
-            {{!-- {{#if (emptyObjectHelper messages)}}
+            {{#if (expressHelperObjectEmpty messages)}}
                 {{> flash-message}}
-            {{/if}} --}}
+            {{/if}}
             {{{body}}}
         </div>
         <div id="body-container-footer" >

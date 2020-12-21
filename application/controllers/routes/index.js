@@ -2,7 +2,7 @@
 Created by Joseph Edradan
 Github: https://github.com/josephedradan
 
-Date created: 
+Date created: 12/9/2020
 
 Purpose:
   Handle basic pages
@@ -21,7 +21,7 @@ Reference:
 
 */
 const express = require('express');
-const router = express.Router();
+const routerIndex = express.Router();
 
 // Database connecter
 // const databaseConnector = require('../config/database_connecter');
@@ -39,17 +39,17 @@ const middlewareRouteProtectors = require('../middleware/middleware_route_protec
 const middlewareGetRecentPosts = require('../middleware/middleware_get_recent_posts');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 /* GET home page. */
-router.get("/", middlewareAsyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), getPageHome)
-router.get("/home", middlewareAsyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), getPageHome);
+routerIndex.get("/", asyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), middlewarePageHome)
+routerIndex.get("/home", asyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), middlewarePageHome);
 
 // GET Login page 
-router.get("/login", middlewareAsyncFunctionHandler(getPageLogin));
+routerIndex.get("/login", asyncFunctionHandler(middlewarePageLogin));
 
-async function getPageLogin(req, res, next) {
-    // debugPrinter.routerPrint("/login");
+async function middlewarePageLogin(req, res, next) {
+    // debugPrinter.printRouter("/login");
 
     // TODO Throw an error...
     // next(new Error('test'));
@@ -62,10 +62,10 @@ async function getPageLogin(req, res, next) {
 
 };
 
-router.get("/registration", getPageRegistration);
+routerIndex.get("/registration", middlewarePageRegistration);
 
-function getPageRegistration(req, res, next) {
-    // debugPrinter.routerPrint("/registration");
+function middlewarePageRegistration(req, res, next) {
+    // debugPrinter.printRouter("/registration");
 
     res.render(
         "registration",
@@ -92,11 +92,11 @@ function getPageRegistration(req, res, next) {
 
 
 // Route Protection (Prevents user from accessing a page, specifically post-image)
-router.use("/post-image", middlewareAsyncFunctionHandler(middlewareRouteProtectors.checkIfLoggedIn));
+routerIndex.use("/post-image", asyncFunctionHandler(middlewareRouteProtectors.checkIfLoggedIn));
 
-router.get("/post-image", getPagePostImage);
+routerIndex.get("/post-image", middlewarePagePostImage);
 
-function getPagePostImage(req, res, next) {
+function middlewarePagePostImage(req, res, next) {
     res.render(
         "post-image",
         {
@@ -109,7 +109,7 @@ function getPagePostImage(req, res, next) {
         });
 };
 
-function getPageHome(req, res, next) {
+function middlewarePageHome(req, res, next) {
     res.render(
         "home",
         {
@@ -123,9 +123,9 @@ function getPageHome(req, res, next) {
         });
 }
 
-router.get("/post/:post_id(\\d+)", getPagePost);
+routerIndex.get("/post/:post_id(\\d+)", middlewarePagePost);
 
-async function getPagePost(req, res, next) {
+async function middlewarePagePost(req, res, next) {
     /*  
     Handles post pages
 
@@ -165,9 +165,10 @@ async function getPagePost(req, res, next) {
             });
         req.session.viewing = req.params.id;
     } else {
-        // req.flash("error", "This is not the post you are looking for!");
+
+        req.flash("alert_user_error", "This is not the post you are looking for!");
         res.redirect("/");
     }
 };
 
-module.exports = router;
+module.exports = routerIndex;

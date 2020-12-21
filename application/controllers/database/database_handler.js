@@ -23,6 +23,9 @@ Reference:
 // Database Connector
 const databaseConnector = require('../config/database_connecter');
 
+// Asynchronous Function Middleware Handler
+const asyncFunctionHandler = require("../decorators/async_function_handler");
+
 async function getPostFromPostID(post_id) {
     // SQL Query to get post id
     let baseSQLQueryGetPostFromPostID =
@@ -76,7 +79,7 @@ async function getUserDataSimpleFromUsername(username) {
         `;
 
     // Get data from database via username (THIS AWAIT IS LITERALLY USELESS BECAUSE IT'S SEQUENTIAL)
-    const [
+    let [
         rowsResultUserData,
         fields,
     ] = await databaseConnector.execute(baseSQLQueryGetUserDataSimpleFromUsername, [username]);
@@ -90,7 +93,7 @@ async function getUserDataAllFromUsername(username) {
     let baseSQLQueryGetUserDataAllFromUsername = "SELECT * FROM users WHERE users_username=?"
 
     // Check if the Username already exists
-    const [rowsResultUserData, fields] = await databaseConnector.execute(
+    let [rowsResultUserData, fields] = await databaseConnector.execute(
         baseSQLQueryGetUserDataAllFromUsername,
         [username]
     );
@@ -104,7 +107,7 @@ async function getEmailDataAllFromEmail(email) {
     let baseSQLQueryGetEmailDataAllFromEmail = "SELECT * FROM users WHERE users_email=?"
 
     // Check if the Email already exists
-    const [rowsResultEmailData, fields] = await databaseConnector.execute(
+    let [rowsResultEmailData, fields] = await databaseConnector.execute(
         baseSQLQueryGetEmailDataAllFromEmail,
         [email]
     );
@@ -118,14 +121,16 @@ async function addUserNewToDatabase(username, email, passwordHashed) {
     let baseSQLQueryInsert =
         "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
 
-    databaseConnector.execute(baseSQLQueryInsert, [
+    let [rowsResultInsertUser, fields] = await databaseConnector.execute(baseSQLQueryInsert, [
         username,
         email,
         passwordHashed,
     ]);
+
+    return [rowsResultInsertUser, fields]
 }
 
-async function getRecentPostThumbnailsByAmount(amount){
+async function getRecentPostThumbnailsByAmount(amount) {
     // Query Database fore recent posts
     let baseSqlQueryGetRecentPosts =
         `
@@ -143,14 +148,83 @@ async function getRecentPostThumbnailsByAmount(amount){
     return [rowsResultGetRecentPostsPosts, fields];
 }
 
-const databaseHandler = {
-    getPostFromPostID: getPostFromPostID,
-    getCommentsFromPostID: getCommentsFromPostID,
-    getUserDataSimpleFromUsername: getUserDataSimpleFromUsername,
-    getUserDataAllFromUsername: getUserDataAllFromUsername,
-    getEmailDataAllFromEmail: getEmailDataAllFromEmail,
-    addUserNewToDatabase: addUserNewToDatabase,
-    getRecentPostThumbnailsByAmount: getRecentPostThumbnailsByAmount,
+async function addPostNewToDatabase(postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id) {
+    // SQl Query to insert image information
+    let baseSQLQueryInsertPostNew =
+        `
+    INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_date_created, posts_fk_users_id) 
+    VALUES (?, ?, ?, ?, now(), ?);
+    `;
+
+    // Make database Insert Query (Needs to be sequential)
+    let [rowsResultInsertPost, fields] = await databaseConnector.execute(
+        baseSQLQueryInsertPostNew,
+        [postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id]
+    )
+
+    return [rowsResultInsertPost, fields];
 }
 
+
+async function search(termSearch) {
+
+    let termSearchModified = "%" + termSearch + "%";
+
+    // SQL Query to search
+    let baseSQLQuerySearch =
+        `
+    SELECT posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, concat_ws(' ', posts.posts_title, posts.posts_description) 
+    AS haystack     
+    FROM posts 
+    HAVING haystack like ?
+    `
+
+    // Make SQL Query to search
+    let [rowsResultSearch, fields] = await databaseConnector.execute(
+        baseSQLQuerySearch,
+        [termSearch]
+    )
+
+    return [rowsResultSearch, fields]
+
+}
+
+// V3
+const databaseHandler = {
+    getPostFromPostID: asyncFunctionHandler(getPostFromPostID, "printFunction"),
+    getCommentsFromPostID: asyncFunctionHandler(getCommentsFromPostID, "printFunction"),
+    getUserDataSimpleFromUsername: asyncFunctionHandler(getUserDataSimpleFromUsername, "printFunction"),
+    getUserDataAllFromUsername: asyncFunctionHandler(getUserDataAllFromUsername, "printFunction"),
+    getEmailDataAllFromEmail: asyncFunctionHandler(getEmailDataAllFromEmail, "printFunction"),
+    getRecentPostThumbnailsByAmount: asyncFunctionHandler(getRecentPostThumbnailsByAmount, "printFunction"),
+    addUserNewToDatabase: asyncFunctionHandler(addUserNewToDatabase, "printFunction"),
+    addPostNewToDatabase: asyncFunctionHandler(addPostNewToDatabase, "printFunction"),
+    search: asyncFunctionHandler(search, "printFunction"),
+}
+
+// V2
+// const databaseHandler = {
+//     getPostFromPostID: asyncFunctionHandler(getPostFromPostID),
+//     getCommentsFromPostID: asyncFunctionHandler(getCommentsFromPostID),
+//     getUserDataSimpleFromUsername: asyncFunctionHandler(getUserDataSimpleFromUsername),
+//     getUserDataAllFromUsername: asyncFunctionHandler(getUserDataAllFromUsername),
+//     getEmailDataAllFromEmail: asyncFunctionHandler(getEmailDataAllFromEmail),
+//     getRecentPostThumbnailsByAmount: asyncFunctionHandler(getRecentPostThumbnailsByAmount),
+//     addUserNewToDatabase: asyncFunctionHandler(addUserNewToDatabase),
+//     addPostNewToDatabase: asyncFunctionHandler(addPostNewToDatabase),
+//     search: search,
+// }
+
+// V1
+// const databaseHandler = {
+//     getPostFromPostID: getPostFromPostID,
+//     getCommentsFromPostID: getCommentsFromPostID,
+//     getUserDataSimpleFromUsername: getUserDataSimpleFromUsername,
+//     getUserDataAllFromUsername: getUserDataAllFromUsername,
+//     getEmailDataAllFromEmail: getEmailDataAllFromEmail,
+//     getRecentPostThumbnailsByAmount: getRecentPostThumbnailsByAmount,
+//     addUserNewToDatabase: addUserNewToDatabase,
+//     addPostNewToDatabase: addPostNewToDatabase,
+//     search: search,
+// }
 module.exports = databaseHandler;

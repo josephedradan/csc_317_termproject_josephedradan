@@ -30,8 +30,8 @@ const debugPrinter = require('../debug/debug_printer');
 
 
 function emptyObject(object){
-    // debugPrinter.debugPrint(object);
-    // debugPrinter.debugPrint(typeof object);
+    // debugPrinter.printDebug(object);
+    // debugPrinter.printDebug(typeof object);
     return !(object.constructor === Object && Object.keys(object).length == 0);
 };
 

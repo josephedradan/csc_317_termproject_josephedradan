@@ -22,13 +22,16 @@ Reference:
 
 */
 const express = require('express');
-const router = express.Router();
+const routerPosts = express.Router();
 const sharp = require('sharp');
 const multer = require('multer');
 const crypto = require('crypto');
 
 // Database connecter
-const databaseConnector = require('../config/database_connecter');
+// const databaseConnector = require('../config/database_connecter');
+
+// Database Handler
+const databaseHandler = require('../database/database_handler')
 
 // Custom user error class
 const PostError = require('../helpers/error/post_error');
@@ -37,7 +40,7 @@ const PostError = require('../helpers/error/post_error');
 const debugPrinter = require('../helpers/debug/debug_printer');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 
 // Rename and Upload image to storage
@@ -66,10 +69,10 @@ const multerStorage = multer.diskStorage({
 
 const uploader = multer({ storage: multerStorage });
 
-router.post('/createPost', uploader.single("post_file"), middlewareAsyncFunctionHandler(createPost));
+routerPosts.post('/createPost', uploader.single("post_file"), asyncFunctionHandler(createPost));
 
 async function createPost(req, res, next) {
-    debugPrinter.debugPrint(req.file);
+    debugPrinter.printDebug(req.file);
 
     // Get the file path
     let postPathFileTemp = req.file.path;
@@ -114,7 +117,7 @@ async function createPost(req, res, next) {
     let postDescription = req.body["post_description"];
 
     // Get the user ID based on the current session
-    let fk_user_id = req.session.session_user_id;
+    let postFKUserID = req.session.session_user_id;
 
     // TODO: SERVER VALIDATION EXPRESS-VALIDATION
     // TODO: VALIDATE  [postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]
@@ -122,41 +125,41 @@ async function createPost(req, res, next) {
     // Make a thumbnail of postPathFile (Needs to be sequential)
     await sharp(postPathFile).resize(200).toFile(postPathThumbnail);
 
-    // debugPrinter.successPrint(postPathThumbnail);
-    // debugPrinter.successPrint(postPathFile);
-    // debugPrinter.successPrint([postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]);
-    debugPrinter.successPrint(postPathFileRelative);
-    debugPrinter.successPrint(postPathThumbnailRelative);
-
-    // SQl Query to insert image information
-    let baseSQLQueryInsert =
-        `
-    INSERT INTO posts (posts_title, posts_description, posts_path_file, posts_path_thumbnail, posts_date_created, posts_fk_users_id) 
-    VALUES (?, ?, ?, ?, now(), ?);
-
-    `;
+    // debugPrinter.printSuccess(postPathThumbnail);
+    // debugPrinter.printSuccess(postPathFile);
+    // debugPrinter.printSuccess([postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]);
+    // debugPrinter.printSuccess(postPathFileRelative);
+    // debugPrinter.printSuccess(postPathThumbnailRelative);
 
     // Make database Insert Query (Needs to be sequential)
-    const [rowsResultInsertPost, fields] = await databaseConnector.execute(
-        baseSQLQueryInsert,
-        [postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id]
-    )
+    const [rowsResultInsertPost, fields] = await databaseHandler.addPostNewToDatabase(
+        postTitle,
+        postDescription,
+        postPathFileRelative,
+        postPathThumbnailRelative,
+        postFKUserID)
 
-    debugPrinter.routerPrint(rowsResultInsertPost);
+    // debugPrinter.printRouter(rowsResultInsertPost);
 
     // Check if Insert query was successful in being uploaded to the database
     if (rowsResultInsertPost && rowsResultInsertPost.affectedRows) {
-        debugPrinter.successPrint(`File uploaded by ${req.session.session_username} was successful!`);
+        debugPrinter.printSuccess(`File uploaded by ${req.session.session_username} was successful!`);
     } else {
 
-        // The below should be handled by middlewareAsyncFunctionHandler buy 
+        // The below should be handled by asyncFunctionHandler buy 
         // res.json({status:"OK", message:"Post was not Successful!", redirect: res.redirect.redirect_last})
 
         throw new PostError(400, `File uploaded by ${req.session.session_username} was not Successful!`, '/postImage');
     };
 
+    debugPrinter.printDebug("File posted data");
+    debugPrinter.printDebug(rowsResultInsertPost);
+
+    // Last added post's ID
+    let postIDLast = rowsResultInsertPost["insertId"];
+    
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
-    res.locals.redirect_last = "/";
+    res.locals.redirect_last = "/post/" + postIDLast;
 
     /* 
     Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
@@ -177,14 +180,14 @@ async function createPost(req, res, next) {
 };
 
 
-router.post('/search', search)
+routerPosts.post('/search', asyncFunctionHandler(search))
 
 async function search(req, res, next) {
 
     let termSearch = req.query.search;
 
     if (!termSearch) {
-        // No search found
+        // No search
         res.send({
             resultsStatus: "info",
             message: "No search term given.",
@@ -192,20 +195,21 @@ async function search(req, res, next) {
         });
     } else {
         // Search found
-        let results = await PostModel.search(termSearch);
-        if (results.length) {
+        let [rowsResultSearch, fields] = await databaseHandler.search(termSearch);
+        
+        if (rowsResultSearch.length) {
             res.send({
-                message: `${results.length} results found`,
-                results: results
+                message: `${rowsResultSearch.length} results found`,
+                results: rowsResultSearch
             });
         } else {
-            let results = await PostModel.getNRecentPosts(10);
+            let [rowsResultGetRecentPostsPosts, fields] = await databaseHandler.getRecentPostThumbnailsByAmount(10);
             res.send({
                 message: "No results where found for your search but here are the 10 most recent posts",
-                results: results
+                results: rowsResultGetRecentPostsPosts
             });
         }
     }
 }
 
-module.exports = router;
+module.exports = routerPosts;

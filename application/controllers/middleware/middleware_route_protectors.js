@@ -21,7 +21,7 @@ Reference:
 
 */
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./middleware_async_function_handler");
+// const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 // Debugging printer
 const debugPrinter = require("../helpers/debug/debug_printer");
@@ -30,7 +30,7 @@ const debugPrinter = require("../helpers/debug/debug_printer");
 const routeProtectors = {};
 
 // Router protector to prevent User from accessing pages if they are not logged in
-// routeProtectors.checkIfLoggedIn = middlewareAsyncFunctionHandler(checkIfLoggedIn);
+// routeProtectors.checkIfLoggedIn = asyncFunctionHandler(checkIfLoggedIn);
 routeProtectors.checkIfLoggedIn = checkIfLoggedIn;
 
 async function checkIfLoggedIn (req, res, next) {
@@ -38,15 +38,15 @@ async function checkIfLoggedIn (req, res, next) {
     Checks if user is logged in the site and prevents unwanted access to other parts of hte website if not logged in
     
     Notes:
-        If this function is not asynchronous then it will crash middlewareAsyncFunctionHandler
+        If this function is not asynchronous then it will crash asyncFunctionHandler
     */
     let username = req.session.session_username;
 
     if (username) {
-        debugPrinter.successPrint(`User ${username} is logged in`);
+        debugPrinter.printSuccess(`User ${username} is logged in and is able to post`);
         next();
     } else {
-        debugPrinter.errorPrint(`User is not logged in`);
+        debugPrinter.printError(`User is not logged in and is not able to post`);
         res.redirect("/");
     }
 };

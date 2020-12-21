@@ -25,9 +25,6 @@ Reference:
 // Debugging printer
 const debugPrinter = require('./debug_printer');
 
-// Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../../middleware/middleware_async_function_handler");
-
 // Database connecter
 const databaseConnector = require('../../config/database_connecter');
 
@@ -42,11 +39,11 @@ async function printSessions() {
     let [dbData, fields] = await databaseConnector.execute(baseSQLQuery);
 
     dbData.forEach(element => {
-        debugPrinter.debugPrint(element);
+        debugPrinter.printDebug(element);
     });
 }
 
 
-printSessions = middlewareAsyncFunctionHandler(printSessions);
+printSessions = printSessions;
 
 module.exports = { printSessions }

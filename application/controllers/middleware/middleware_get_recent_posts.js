@@ -28,21 +28,16 @@ Reference:
 
 
 // Database connecter
-const databaseConnector = require("../config/database_connecter");
+// const databaseConnector = require("../config/database_connecter");
 const databaseHandler = require("../database/database_handler");
 
 // Debugging printer
 const debugPrinter = require('../helpers/debug/debug_printer');
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./middleware_async_function_handler");
+// const asyncFunctionHandler = require("../decorators/async_function_handler");
 
-const postMiddleware = {};
-
-// postMiddleware.getRecentPosts = middlewareAsyncFunctionHandler(getRecentPosts);
-postMiddleware.getRecentPosts = getRecentPosts;
-
-async function getRecentPosts(req, res, next) {
+async function middlewareGetRecentPosts(req, res, next) {
 
 
     // Query the Database for the posts
@@ -51,15 +46,15 @@ async function getRecentPosts(req, res, next) {
     if (rowsResultGetRecentPostsPosts && rowsResultGetRecentPostsPosts.length == 0) {
 
         // Don't use flash because it's buggy
-        // req.flash("error", "there are no posts created yet");
+        // req.flash("alert_user_error", "there are no posts created yet");
 
         // Print that there are no posts made
-        debugPrinter.warningPrinter("Query to get Recent Posts Failed!")
+        debugPrinter.printWarning("Query to get Recent Posts Failed!")
     } else {
 
         // Print the results of the database query
-        debugPrinter.successPrint("Query to get Recent Posts was Successful!");
-        debugPrinter.debugPrint(rowsResultGetRecentPostsPosts);
+        debugPrinter.printSuccess("Query to get Recent Posts was Successful!");
+        debugPrinter.printDebug(rowsResultGetRecentPostsPosts);
 
         // Add the results of the database call to the res.locals
         res.locals.rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
@@ -68,4 +63,10 @@ async function getRecentPosts(req, res, next) {
     next();
 
 };
+
+const postMiddleware = {
+    getRecentPosts: middlewareGetRecentPosts
+
+};
+
 module.exports = postMiddleware;

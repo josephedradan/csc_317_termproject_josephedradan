@@ -2,7 +2,7 @@
 Created by Joseph Edradan
 Github: https://github.com/josephedradan
 
-Date created: 
+Date created: 12/9/2020
 
 Purpose:
 
@@ -12,7 +12,9 @@ Description:
 
 Notes:
     res.locals 
-        lasts whiles it's being generated and sent back
+        lasts whiles it's being generated and sent back.
+        It's the thing that you can use to communicate between different middlewares and to the user BEFORE the page finishes loading.
+        This means that you can't carry over unless you use flash, but that's buggy
     
     app.locals
         last entirety of program
@@ -99,14 +101,14 @@ const loggerMorgan = require("morgan");
 const expressHandlebars = require("express-handlebars");
 const expressSessions = require("express-session");
 const MySQLSession = require("express-mysql-session")(expressSessions);
-// const expressFlash = require('express-flash'); // Buggy with express-sessions
+const expressFlash = require('express-flash'); // Buggy with express-sessions
 
 const routerIndex = require("./controllers/routes/index"); // From routes/index.js
 const routerUsers = require("./controllers/routes/users"); // From users/users.js
 const routerPosts = require("./controllers/routes/posts");
-const routerDatabase = require("./controllers/routes/database_test"); // Db testing TODO: FIXME
+const routerDatabaseTest = require("./controllers/routes/test_database"); // Db testing TODO: FIXME
 
-// Custom printer
+// Debug printer
 const debugPrinter = require("./controllers/helpers/debug/debug_printer");
 
 const handlebarHelpers = require("./controllers/helpers/handlebars_helpers/handlebars_helper");
@@ -114,7 +116,7 @@ const handlebarHelpers = require("./controllers/helpers/handlebars_helpers/handl
 const mySQLPrinter = require("./controllers/helpers/debug/my_sql_printer");
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("./controllers/middleware/middleware_async_function_handler");
+const asyncFunctionHandler = require("./controllers/decorators/async_function_handler");
 
 // Express object
 const app = express();
@@ -149,7 +151,7 @@ app.engine(
 
         // Helper functions for you
         helpers: {
-            // emptyObjectHelper: handlebarHelpers.emptyObject
+            expressHelperObjectEmpty: handlebarHelpers.emptyObject
         },
     })
 );
@@ -204,7 +206,7 @@ app.use(express.json()); // Parse response
 app.use(express.urlencoded({ extended: false })); // Parse response
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(expressFlash()); // Buggy with express-sessions
+app.use(expressFlash()); // Buggy with express-sessions
 
 /* 
 Unmounted middleware user defined
@@ -213,30 +215,38 @@ Notes:
 
 */
 // Print information about the request
-app.use(middlewareAsyncFunctionHandler(requestHandler));
+app.use(asyncFunctionHandler(middlewareRequestResponseHandler));
 
-async function requestHandler(req, res, next) {
+async function middlewareRequestResponseHandler(req, res, next) {
+    /* 
+    This function reads requests and response
+    
+    */
     // res.locals (req.locals does not exist)
-    debugPrinter.debugPrint(res.locals);
+    debugPrinter.printDebug(res.locals);
 
     // print request method
-    // debugPrinter.requestPrint(req.method);
+    // debugPrinter.printRequest(req.method);
 
     // print request url
-    // debugPrinter.requestPrint(req.url);
+    // debugPrinter.printRequest(req.url);
 
     // Debug print method and url
-    debugPrinter.requestPrint(`${req.method}: ${req.url}`);
+    debugPrinter.printRequest(`${req.method}: ${req.url}`);
 
     // Call next middleware
     next();
 }
 
 // Express Session handling (Must be below expressSessions)
-app.use(middlewareAsyncFunctionHandler(expressSessionHandler));
+app.use(asyncFunctionHandler(middlewareExpressSessionHandler));
 
-async function expressSessionHandler(req, res, next) {
-    debugPrinter.debugPrint(req.session);
+async function middlewareExpressSessionHandler(req, res, next) {
+    /* 
+    This function handles logged in users 
+
+    */
+    debugPrinter.printDebug(req.session);
 
     // Print the session from the database
     // mySQLPrinter.printSessions();
@@ -246,6 +256,8 @@ async function expressSessionHandler(req, res, next) {
         res.locals.session_logged = true;
         res.locals.session_username = req.session.session_username;
     }
+    
+    // Call next middleware
     next();
 }
 
@@ -257,35 +269,40 @@ Notes:
 
 */
 app.use("/", routerIndex); // app.locals.settings["/"]
-app.use("/databaseTest", routerDatabase); // app.locals.settings["/databaseTest"]
+app.use("/databaseTest", routerDatabaseTest); // app.locals.settings["/databaseTest"]
 app.use("/users", routerUsers); // app.locals.settings["/users"]
 app.use("/posts", routerPosts); // app.locals.settings["/posts"]
 
-/* 
-*** Error Handling Middleware ***
+// Using my asyncFunctionHandler will cause errors!
+// app.use("/", asyncFunctionHandler(routerIndex, "printRouter")); // app.locals.settings["/"]
+// app.use("/databaseTest", asyncFunctionHandler(routerDatabaseTest, "printRouter")); // app.locals.settings["/databaseTest"]
+// app.use("/users", asyncFunctionHandler(routerUsers, "printRouter")); // app.locals.settings["/users"]
+// app.use("/posts", asyncFunctionHandler(routerPosts, "printRouter")); // app.locals.settings["/posts"]
 
-Notes:
-    If an error is caught, then this is called.
 
-*/
+app.use(asyncFunctionHandler(middlewareSaveSessionThenRedirect));
 
-app.use(middlewareAsyncFunctionHandler(saveSessionThenRedirect));
-
-async function saveSessionThenRedirect(req, res, next) {
+async function middlewareSaveSessionThenRedirect(req, res, next) {
+    /* 
+    This function handles the redirect at the end of all next() calls
+    
+    */
     // res.locals (req.locals does not exist)
-    debugPrinter.debugPrint(res.locals);
+    debugPrinter.printDebug(res.locals);
 
     // Must force a save because redirect is TOO FAST COMPARED TO req to write to the Database
     req.session.save((err) => {
-        // Handle errors
+        // Handle errors when saving
         if (err) {
             next(err);
-        } else {
+        } 
+        // If successful after saving
+        else {
 
             // Get location of Redirect based on res.locals.redirect_last
             let location = res.locals.redirect_last;
-            
-            debugPrinter.debugPrint(`Redirecting User to: ${location}`);
+
+            debugPrinter.printDebug(`Redirecting User to: ${location}`);
 
             // Redirect user
             res.redirect(location);
@@ -308,18 +325,31 @@ async function saveSessionThenRedirect(req, res, next) {
 
 }
 
-app.use(errorHandler);
+/* 
+*** Error Handling Middleware ***
 
-function errorHandler(err, req, res, next) {
+Notes:
+    If an error is caught, then this is called.
+
+*/
+
+app.use(middlewareErrorHandler);
+
+function middlewareErrorHandler(err, req, res, next) {
+    /* 
+    This functions handles all errors at the end of the day
+    
+    */
+    debugPrinter.printMiddleware(middlewareErrorHandler.name);
     // Use the debugPrinter's errorPrint function to print message to console
-    debugPrinter.errorPrint(err);
+    debugPrinter.printError(err);
 
     // Render error page with error message
     // TODO: error.hbs does not exist so you will get another error
     // res.render('error', { err_message: err })
 
     // VERY IMPORTANT NOTE: ALL ERRORS NOT CAUGHT BY THE DEVELOPER WILL REDIRECT TO THE HOME PAGE
-    res.redirect("/");
+    // res.redirect("/"); // DON'T DO CALL THIS
 }
 
 // Export app

@@ -52,7 +52,9 @@ colors.setTheme({
     warning: ["black", 'bgYellow'],
     debug: ['white', 'bgBlue'],
     middleware: ['white', 'bgMagenta', 'bold'],
-    routerPrint: ["white", "bgBrightBlue"],
+    router: ["white", "bgBrightBlue"],
+    function: ["black", "bgGrey"],
+
 })
 
 // A Debug printer for the Debug printers
@@ -73,7 +75,7 @@ function wrapperPrinter(functionGiven) {
 
 // Custom printer for errors
 const debugPrinter = {
-    errorPrint: wrapperPrinter((message) => {
+    printError: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -83,7 +85,7 @@ const debugPrinter = {
             console.log(colors.error(message));
         }
     }),
-    successPrint: wrapperPrinter((message) => {
+    printSuccess: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -94,7 +96,7 @@ const debugPrinter = {
         }
 
     }),
-    requestPrint: wrapperPrinter((message) => {
+    printRequest: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -105,7 +107,7 @@ const debugPrinter = {
         }
 
     }),
-    warningPrinter: wrapperPrinter((message) => {
+    printWarning: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -116,7 +118,7 @@ const debugPrinter = {
         }
 
     }),
-    debugPrint: wrapperPrinter((message) => {
+    printDebug: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -127,7 +129,7 @@ const debugPrinter = {
         }
 
     }),
-    middlewarePrint: wrapperPrinter((message) => {
+    printMiddleware: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
@@ -138,14 +140,24 @@ const debugPrinter = {
         }
 
     }),
-    routerPrint: wrapperPrinter((message) => {
+    printRouter: wrapperPrinter((message) => {
 
         if (typeof message === "string") {
             // Console log message with custom color
-            console.log(colors.routerPrint(`${moment().format()} Route Function: ${message}`));
+            console.log(colors.router(`${moment().format()} Router: ${message}`));
         } else {
-            console.log(colors.routerPrint(`${moment().format()}`));
-            console.log(colors.routerPrint(message));
+            console.log(colors.router(`${moment().format()}`));
+            console.log(colors.router(message));
+        }
+
+    }),
+    printFunction: wrapperPrinter((message) => {
+        if (typeof message === "string") {
+            // Console log message with custom color
+            console.log(colors.function(`${moment().format()} Function: ${message}`));
+        } else {
+            console.log(colors.function(`${moment().format()}`));
+            console.log(colors.function(message));
         }
 
     })

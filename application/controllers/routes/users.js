@@ -2,7 +2,7 @@
 Created by Joseph Edradan
 Github: https://github.com/josephedradan
 
-Date created: 
+Date created: 12/9/2020
 
 Purpose:
   Handle urls relevant to the user
@@ -26,7 +26,7 @@ Node modules
 
 */
 const express = require("express");
-const router = express.Router();
+const routerUsers = express.Router();
 const bcrypt = require("bcrypt");
 
 // Database connecter
@@ -42,17 +42,17 @@ const debugPrinter = require("../helpers/debug/debug_printer");
 const UserError = require("../helpers/error/user_error");
 
 // Asynchronous Function Middleware Handler
-const middlewareAsyncFunctionHandler = require("../middleware/middleware_async_function_handler");
+const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 // const mySQLPrinter = require('../helpers/my_sql_printer');
 
 // Handle registration posting
-router.post("/register", middlewareAsyncFunctionHandler(register));
+routerUsers.post("/register", asyncFunctionHandler(middlewareRegister));
 
-async function register(req, res, next) {
+async function middlewareRegister(req, res, next) {
     // req Comes with a bunch of garbage
     // Body of the POST
-    debugPrinter.debugPrint(req.body);
+    debugPrinter.printDebug(req.body);
 
     // TODO: DO VALIDATION
 
@@ -77,8 +77,8 @@ async function register(req, res, next) {
     // Check if the Email already exists
     const promiseEmail = databaseHandler.getEmailDataAllFromEmail(email);
 
-    debugPrinter.successPrint(promiseUsername);
-    debugPrinter.successPrint(promiseEmail);
+    debugPrinter.printSuccess(promiseUsername);
+    debugPrinter.printSuccess(promiseEmail);
 
     // Call promises concurrently
     [resultSQLQueryUsername, resultSQLQueryEmail] = await Promise.all([promiseUsername, promiseEmail])
@@ -89,25 +89,23 @@ async function register(req, res, next) {
 
     // Check username exists in database then check its length
     if (rowsResultUsername && rowsResultUsername.length) {
-        let stringFailure = `Username: ${username} already exists!`;
-        debugPrinter.errorPrint(stringFailure);
-        res.status(300).redirect("/registration");
+        let stringFailure = `Username: ${username} is taken!`;
+        debugPrinter.printError(stringFailure);
         throw new UserError(
-            "Registration Failed: Username already exists",
+            400,
+            stringFailure,
             "/registration",
-            300
         );
     }
 
     // Check Email exist in database then check its length
     if (rowsResultEmail && rowsResultEmail.length) {
-        let stringFailure = `Email: ${email} already exists!`;
-        debugPrinter.errorPrint(stringFailure);
-        res.status(300).redirect("/registration");
+        let stringFailure = `Email: ${email} is in use!`;
+        debugPrinter.printError(stringFailure);
         throw new UserError(
-            "Registration Failed: Email is already in use!",
+            400,
+            stringFailure,
             "/registration",
-            300
         );
     }
 
@@ -117,7 +115,7 @@ async function register(req, res, next) {
     // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES LIKE IN PYTHON
 
     let stringSuccess1 = "Executing Registration Query";
-    debugPrinter.successPrint(stringSuccess1);
+    debugPrinter.printSuccess(stringSuccess1);
     // databaseConnector.execute(baseSQLQueryInsert, [
     //     username,
     //     email,
@@ -126,10 +124,10 @@ async function register(req, res, next) {
     databaseHandler.addUserNewToDatabase(username, email, passwordHashed);
 
     let stringSuccess2 = `Query Successful`;
-    debugPrinter.successPrint(stringSuccess2);
+    debugPrinter.printSuccess(stringSuccess2);
 
     // Flash (USE THIS IF flash DOES NOT BREAK express-sessions)
-    // req.flash('alert_account_creation', "Your can now log in")
+    req.flash('alert_account_creation', "Your can now log in");
 
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
     res.locals.redirect_last = "/login";
@@ -149,9 +147,9 @@ async function register(req, res, next) {
 }
 
 // Handle /login
-router.post("/login", middlewareAsyncFunctionHandler(login));
+routerUsers.post("/login", asyncFunctionHandler(middlewareLogin));
 
-async function login(req, res, next) {
+async function middlewareLogin(req, res, next) {
     /* 
     Handle User login
     
@@ -179,7 +177,7 @@ async function login(req, res, next) {
         }
 
         // Debug print resultUserDataFirst
-        // debugPrinter.debugPrint(`Object from DB: ${resultUserDataFirst}`);
+        // debugPrinter.printDebug(`Object from DB: ${resultUserDataFirst}`);
 
         // Assign local vars for easy use
         let db_id = resultUserDataFirst["users_id"];
@@ -190,15 +188,15 @@ async function login(req, res, next) {
         let check = await bcrypt.compare(password, db_password_hashed);
 
         if (check) {
-            // debugPrinter.debugPrint(typeof (resultUserDataFirst)); // Type is object
+            // debugPrinter.printDebug(typeof (resultUserDataFirst)); // Type is object
 
             for (const [key, value] of Object.entries(resultUserDataFirst)) {
-                debugPrinter.debugPrint(`${key}: ${value}`);
+                debugPrinter.printDebug(`${key}: ${value}`);
             }
 
             // Set user as logged in in Sessions
-            req.session.session_username = await db_username; // await does nothing here
-            req.session.session_user_id = await db_id; // await does nothing here
+            req.session.session_username = db_username; // await does nothing here
+            req.session.session_user_id = db_id; // await does nothing here
 
             // Assign res locals immediately (Doesn't matter since we are going to redirect to home anyways)
             // res.locals.session_logged = true;
@@ -206,13 +204,13 @@ async function login(req, res, next) {
 
             // Debug print successful login
             let stringSuccess = `User ${db_username} has logged in`;
-            debugPrinter.successPrint(stringSuccess);
+            debugPrinter.printSuccess(stringSuccess);
 
             // Add to flash before redirect
-            // req.flash('alert_username', `${db_username}`) // await does nothing here
+            req.flash('alert_username', `${db_username}`) // await does nothing here
 
             // Debug print the req.session
-            debugPrinter.debugPrint(req.session);
+            debugPrinter.printDebug(req.session);
 
             // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
             res.locals.redirect_last = "/";
@@ -230,8 +228,8 @@ async function login(req, res, next) {
             next();
 
             // Debug print (After the next call)
-            // debugPrinter.debugPrint("Stuff happens after?");
-            // debugPrinter.successPrint(global); // this == global
+            // debugPrinter.printDebug("Stuff happens after?");
+            // debugPrinter.printSuccess(global); // this == global
 
             // CHECK IF YOU WROTE TO THE DATABASE
             // mySQLPrinter.printSessions();
@@ -250,15 +248,15 @@ async function login(req, res, next) {
 }
 
 
-router.post("/logout", middlewareAsyncFunctionHandler(logout));
+routerUsers.post("/logout", asyncFunctionHandler(middlewareLogout));
 
-async function logout(req, res, next) {
+async function middlewareLogout(req, res, next) {
     /* 
     Handle /logout 
 
     TODO: MAKE THIS ASYNCHRONOUS USING AWAIT 
     TODO: IF YOU MAKE MAKE IT WITH AWAIT, HOW WOULD THAT LOOK LIKE BECAUSE YOU WON'T
-    TODO: GET THAT ERROR SINCE THE ERROR WILL BE CAUGHT BY middlewareAsyncFunctionHandler
+    TODO: GET THAT ERROR SINCE THE ERROR WILL BE CAUGHT BY asyncFunctionHandler
     TODO: DO I CONTINUE TO USE A PROMISE?
 
     IMPORTANT NOTES:
@@ -276,13 +274,13 @@ async function logout(req, res, next) {
         // Handle errors
         if (err) {
             // Debug print error
-            debugPrinter.errorPrint("Session could not be destroyed.");
+            debugPrinter.printError("Session could not be destroyed.");
             next(err);
         }
-        // Hand
+        // Handle when session is destroyed
         else {
             // Debug print success
-            debugPrinter.successPrint("Session was destroyed");
+            debugPrinter.printSuccess("Session was destroyed");
 
             // Clear cookies
             res.clearCookie("csid");
@@ -299,4 +297,4 @@ async function logout(req, res, next) {
     });
 }
 
-module.exports = router;
+module.exports = routerUsers;
