@@ -33,7 +33,7 @@ const bcrypt = require("bcrypt");
 // const databaseConnector = require("../config/database_connecter");
 
 // Database Handler
-const databaseHandler = require('../database/database_handler')
+const usersModel = require('../database/model_users')
 
 // Debugging printer
 const debugPrinter = require("../helpers/debug/debug_printer");
@@ -72,10 +72,10 @@ async function middlewareRegister(req, res, next) {
     //     "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
 
     // Check if the Username already exists
-    const promiseUsername = databaseHandler.getUserDataAllFromUsername(username);
+    const promiseUsername = usersModel.getUserDataAllFromUsername(username);
 
     // Check if the Email already exists
-    const promiseEmail = databaseHandler.getEmailDataAllFromEmail(email);
+    const promiseEmail = usersModel.getUserEmailDataAllFromEmail(email);
 
     debugPrinter.printSuccess(promiseUsername);
     debugPrinter.printSuccess(promiseEmail);
@@ -121,13 +121,13 @@ async function middlewareRegister(req, res, next) {
     //     email,
     //     passwordHashed,
     // ]);
-    databaseHandler.addUserNewToDatabase(username, email, passwordHashed);
+    usersModel.addUserNewToDatabase(username, email, passwordHashed);
 
     let stringSuccess2 = `Query Successful`;
     debugPrinter.printSuccess(stringSuccess2);
 
     // Flash (USE THIS IF flash DOES NOT BREAK express-sessions)
-    req.flash('alert_account_creation', "Your can now log in");
+    // req.flash('alert_account_creation', "Your can now log in");
 
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
     res.locals.redirect_last = "/login";
@@ -160,7 +160,7 @@ async function middlewareLogin(req, res, next) {
     let password = req.body["password"];
 
     // Get data from database via username (THIS AWAIT IS LITERALLY USELESS BECAUSE IT'S SEQUENTIAL)
-    const [rowsResultUserData, fields] = await databaseHandler.getUserDataSimpleFromUsername(username);
+    const [rowsResultUserData, fields] = await usersModel.getUserDataSimpleFromUsername(username);
 
     // resultUserData Exists and resultUserData.length Exists
     if (rowsResultUserData && rowsResultUserData.length) {
@@ -197,7 +197,6 @@ async function middlewareLogin(req, res, next) {
             // Set user as logged in in Sessions
             req.session.session_username = db_username; // await does nothing here
             req.session.session_user_id = db_id; // await does nothing here
-
             // Assign res locals immediately (Doesn't matter since we are going to redirect to home anyways)
             // res.locals.session_logged = true;
             // res.locals.session_username = req.session.session_username;
@@ -207,7 +206,7 @@ async function middlewareLogin(req, res, next) {
             debugPrinter.printSuccess(stringSuccess);
 
             // Add to flash before redirect
-            req.flash('alert_username', `${db_username}`) // await does nothing here
+            // req.flash('alert_username', `${db_username}`) // await does nothing here
 
             // Debug print the req.session
             debugPrinter.printDebug(req.session);

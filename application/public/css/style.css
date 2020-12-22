@@ -1,3 +1,29 @@
+/* 
+Work Sans
+Notes:
+    font-family: 'Work Sans', sans-serif;
+
+Reference:
+    https://fonts.google.com/specimen/Work+Sans
+*/
+/* @import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600'); */
+
+/* 
+Inter typeface
+    font-family: 'Inter', sans-serif;
+
+Reference:
+    https://rsms.me/inter/ 
+
+*/
+@import url('https://rsms.me/inter/inter.css');
+/* 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: 0;
+} */
+
 html {
   font-size: 62.5%;
   /* height: 100%; */
@@ -7,13 +33,21 @@ html {
   
 }
 
+
+
+
+
 body {
   /* font-size: 62.5%; */
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: 1fr auto;
+  /* min-height: 100%; */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* min-height: 100%; */
 
-  font-family: Arial;
+
+  /* grid-template-rows: 1fr auto; */
+
+  font-family: 'Inter', sans-serif;
 
   margin: 0;
   padding: 0;
@@ -21,21 +55,75 @@ body {
   width: 100%;
 }
 
-.body-container {
-  background: white;
-  display: grid; /*Don't use flex it will overlap*/
-  height: 100%;
-  padding: 20px;
-  min-height: 100%;
+#body-container {
+  background: grey;
+  /* background-image: linear-gradient(black, grey); */
+    /*Don't use flex it will overlap*/
+  /* display: grid;  */
+  /* height: 100%; */
+  /* padding: 20px; */
+
   margin: 0 auto -50px;
+
+  /* position: relative; */
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
+#body-container-header{
+    /* position: absolute; */
+    /* top: 0; */
+    /* height: 100%; */
+
+}
+#body-container-body{
+    /* height: 100%; */
+
+}
+#body-container-footer{
+    bottom: 0;
+    width: 100%;
+    margin-top: auto;
+
+}
+.div-container-content-parent{
+    /* background: white; */
+    display: grid; /*Don't use flex it will overlap*/
+    justify-content: center;
+    align-items: center;
+    /* height: 85vh; */  /* Don't use use*/
+    height: 100%;
+}
+
+.div-container-content {
+    padding: 25px;
+}
+
+.div-standard{
+    width: 100%;
+    /* height: 100%; */
+}
+.div-content-spaced-fair{
+    /* height: 100%; */
+    margin: 5px;
+  }
+
+
+
+
+
+
+
+
+
+/* Navbar stuff */
 
 header {
   display: flex;
 
   color: white;
-  background: #169bd7;
+  background: black;
 
   /* width: 100%; */
   /* height: 100px; */
@@ -73,14 +161,13 @@ header > ul{
 
 }
 .logo{
-
+  font-style: italic;
   padding: 10px;
   margin: 0;
   margin-right: auto;
 
   font-size: 4em;
   font-weight: 600;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .nav-links{
@@ -100,25 +187,38 @@ header > ul{
 }
 
 .nav-links li a:hover{
-  color: aquamarine;
-}
-footer{
-  grid-row-start: 2;
-  grid-row-end: 3;
-
-  margin: 0;
-  padding: 0;
-
-
-  font-size: 20px;
-  color: white;
-  background-color: black;
-}
-footer p {
-  margin: 0;
-  padding: 50px;
+  color: red;
 }
 
+
+.div-search{
+    background: #0b7dda;
+    margin-right: auto;
+}
+.div-search button {
+
+    margin-right: auto;
+    float: left;
+    width: 20%;
+    padding: 10px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+.div-search input {
+    margin-right: auto;
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+}
+
+  
 #count-size > p{
   margin: 0px;
 }
@@ -133,48 +233,32 @@ footer p {
 
 
 
-.div-container-content-parent{
-    background: white;
-    display: grid; /*Don't use flex it will overlap*/
-    justify-content: center;
-    align-items: center;
-    /* height: 85vh; */  /* Don't use use*/
-    height: 100%;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#registration-form{
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-.div-container-content {
-    padding: 25px;
+fieldset{
 }
-
-.div-standard{
-    width: 100%;
-    height: 100%;
-}
-.div-content-spaced-fair{
-    height: 100%;
-    margin: 5px;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 form {
   font-size: 2em;
@@ -226,7 +310,7 @@ form > fieldset > button {
   font-family: inherit;
   font-size: inherit;
   color: white;
-  background-color: #169bd7;
+  background-color: black;
   cursor: pointer;
   font-weight: 400;
   outline: 0;
@@ -384,9 +468,25 @@ Home page for loading the images and stuff
 
 
 
+#body-container-footer{
+}
 
+footer{
+    grid-row-start: 2;
+    grid-row-end: 3;
 
+    margin: 0;
+    padding: 0;
 
+    font-size: 20px;
+    color: white;
+    background-color: black;
+    
+}
+footer p {
+    margin: 0;
+    padding: 50px;
+}
 
 footer p{
   font-size: 16px;
@@ -394,6 +494,7 @@ footer p{
   width: 50%;
   padding: 10px;
   text-align: center;
+
 }
 
 .copyright{
@@ -407,17 +508,44 @@ footer p{
 
 /* Handlerbars stuff */
 
-#flash-message{
-  text-align: center;
-  font-size: 20px;
+#flash-message-container{
+    text-align: center;
+    font-size: 20px;
+    position: fixed;
+    left: 50%;
+    top: 5%;
+    transform:  translate(-50%, 0);
 }
+#flash-message{
 
+}
 .flash-success{
-  background-color: rgb(0, 255, 0);
+    background-color: #43AC6A;
+    border-color: #368a55;
+    color: #FFFFFF; 
+    padding: 3px;
+    padding: 10px;
+    border-radius: 50px;
+
 
 }
 
 .flash-error{
-  background-color: rgb(255, 0, 0);
+    background-color: #f04124;
+    border-color: #cf2a0e;
+    color: #FFFFFF;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 50px;
+
+}
+
+.flash-notify{
+    background-color: #24b6f0;
+    border-color: #0e62cf;
+    color: #FFFFFF;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 50px;
 
 }

@@ -3,27 +3,27 @@
 
 
     Reference:
-    Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
-    https://www.youtube.com/watch?v=PwWHL3RyQgk
+        Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
+            https://www.youtube.com/watch?v=PwWHL3RyQgk
 
-    CSC 317 Term Project Log out
-    https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.be
+        CSC 317 Term Project Log out
+            https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.bes
 
     --}}
     {{!-- <h1 class="header-title"></h1> --}}
-    <a class="logo" href="/home">{{page_title}}</a>
+    <a class="logo" href="/">Deep Dark Fantasies</a>
     <ul class="nav-links">
         {{!-- <li><a href="home">Home</a></li> --}}
 
-
-        <input id="input-search-text" name="input-search-text" type="text">
-        <i id="button-search">asdasda</i>
-
+        <div class="div-search">
+            <input id="search-text" name="div-input-search-text" type="text">
+            <button id="search-button"><i class="fa fa-search"></i></button>
+        </div>
 
         {{!-- If logged in --}}
         {{#if session_logged}}
             <li><a id="link-post-image" href="/post-image">Post image</a></li>
-            <li><a id="link-username" href="/home">Welcome {{session_username}}</a></li>
+            <li><a id="link-username" href="/">Welcome {{session_username}}</a></li>
             <li><a id="link-logout" >Log out</a></li> {{!-- No href because JS should handle that in --}}
 
         {{!-- If Logged out --}}

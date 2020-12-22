@@ -27,7 +27,8 @@ const routerIndex = express.Router();
 // const databaseConnector = require('../config/database_connecter');
 
 // Database Handler
-const databaseHandler = require('../database/database_handler')
+const postsModel = require('../database/model_posts')
+const commentsModel = require('../database/model_comments')
 
 // Debug printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -36,14 +37,28 @@ const debugPrinter = require('../helpers/debug/debug_printer');
 const middlewareRouteProtectors = require('../middleware/middleware_route_protectors');
 
 // middlewareGetRecentPosts
-const middlewareGetRecentPosts = require('../middleware/middleware_get_recent_posts');
+const middlewareGetPosts = require('../middleware/middleware_get_posts');
 
 // Asynchronous Function Middleware Handler
 const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 /* GET home page. */
-routerIndex.get("/", asyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), middlewarePageHome)
-routerIndex.get("/home", asyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), middlewarePageHome);
+routerIndex.get("/", asyncFunctionHandler(middlewareGetPosts.middlewarePageHomeGetPosts), middlewarePageHome)
+// routerIndex.get("/home", asyncFunctionHandler(middlewareGetRecentPosts.getRecentPosts), middlewarePageHome);
+
+function middlewarePageHome(req, res, next) {
+    res.render(
+        "home",
+        {
+            // Order of js files matter
+            // page_title: "Home",
+            // js_files:
+            //     [
+            //         // "https://unpkg.com/axios/dist/axios.min.js",
+            //         // "/js/home_OLD.js",
+            //     ],
+        });
+}
 
 // GET Login page 
 routerIndex.get("/login", asyncFunctionHandler(middlewarePageLogin));
@@ -57,7 +72,7 @@ async function middlewarePageLogin(req, res, next) {
     res.render(
         "login",
         {
-            page_title: "Login"
+            // page_title: "Login"
         });
 
 };
@@ -70,7 +85,7 @@ function middlewarePageRegistration(req, res, next) {
     res.render(
         "registration",
         {
-            page_title: "Registration",
+            // page_title: "Registration",
             js_files:
                 [
                     "/js/registration.js"
@@ -80,13 +95,13 @@ function middlewarePageRegistration(req, res, next) {
 
 
 // Route for image-post (Old post)
-routerIndex.get("/image-post", getPageImagePost);
+routerIndex.get("/image-post", middlewarePageImagePost);
 
-function getPageImagePost(req, res, next) {
+function middlewarePageImagePost(req, res, next) {
     res.render(
         "image-post",
         {
-            page_title: "Image post"
+            // page_title: "Image post"
         });
 };
 
@@ -100,30 +115,17 @@ function middlewarePagePostImage(req, res, next) {
     res.render(
         "post-image",
         {
-            page_title: "Post Image",
+            // page_title: "Post Image",
             js_files:
                 [
-                    "https://unpkg.com/axios/dist/axios.min.js",
+                    // "https://unpkg.com/axios/dist/axios.min.js",
                     "/js/post_image.js",
                 ]
         });
 };
 
-function middlewarePageHome(req, res, next) {
-    res.render(
-        "home",
-        {
-            // Order of js files matter
-            page_title: "Home",
-            js_files:
-                [
-                    "https://unpkg.com/axios/dist/axios.min.js",
-                    // "/js/home_OLD.js",
-                ],
-        });
-}
 
-routerIndex.get("/post/:post_id(\\d+)", middlewarePagePost);
+routerIndex.get("/post/:post_id(\\d+)", asyncFunctionHandler(middlewarePagePost));
 
 async function middlewarePagePost(req, res, next) {
     /*  
@@ -142,10 +144,10 @@ async function middlewarePagePost(req, res, next) {
     */
 
     // Get post ID from url
-    let post_id = req.params.post_id;
+    let postIDGiven = req.params.post_id;
     
     // Get Post from post_id
-    let [resultsSQLPostID, fields] = await databaseHandler.getPostFromPostID(post_id);
+    let [resultsSQLPostID, fields] = await postsModel.getPostFromPostID(postIDGiven);
 
     // Post object
     let postObject = resultsSQLPostID[0];
@@ -153,22 +155,107 @@ async function middlewarePagePost(req, res, next) {
     if (resultsSQLPostID && resultsSQLPostID.length) {
 
         // Get Post from post_id
-        let [rowsResultPostIDComments, fields2] = await databaseHandler.getCommentsFromPostID(post_id);
+        let [rowsResultPostIDComments, fields2] = await commentsModel.getCommentsFromPostID(postIDGiven);
 
         res.render(
             "post",
             {
-                title: postObject["posts_title"],
+                page_title: postObject["posts_title"],
                 postCurrent: postObject,
-                // comment: yeet.convert(rowsResultPostIDComments),
+                // comments: yeet.convert(rowsResultPostIDComments),
                 // unique: "Post",
             });
         req.session.viewing = req.params.id;
     } else {
 
-        req.flash("alert_user_error", "This is not the post you are looking for!");
+        // req.flash("alert_user_error", "This is not the post you are looking for!");
         res.redirect("/");
     }
 };
+
+routerIndex.get('/results', asyncFunctionHandler(middlewareSearch))
+
+async function middlewareSearch(req, res, next) {
+    /* 
+    Allow searching on website
+    
+    Reference:
+        Node.js: how to get the URL to the page which called a POST from the request body?
+            https://stackoverflow.com/questions/53663004/node-js-how-to-get-the-url-to-the-page-which-called-a-post-from-the-request-bod
+
+        Use dynamic (variable) string as regex pattern in JavaScript
+            https://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
+    */
+
+    // debugPrinter.printWarning(req.headers.referer);
+    // debugPrinter.printWarning(req.headers.host);
+    // debugPrinter.printWarning(req.hostname);
+
+    let textTermSearched = req.query.search_query;
+
+    debugPrinter.printSuccess(`Search Term: ${textTermSearched}`);
+
+    // /*
+    // Check if the host and the referer are the same
+    // If both urls are different (a match has occurred) then redirect and search
+    // */
+    // if (URLReferer.match(regexPatternBaseURL)){
+    //     // debugPrinter.printWarning(URLReferer.match(regexPatternBaseURL));
+    //     debugPrinter.printWarning("Current page is not the home page!")
+    //     return;
+
+    // }
+
+    if (!textTermSearched) {
+        // If nothing is given then return an empty results_search
+        // res.send({
+        //     results_status: "info",
+        //     message: "No search term given.",
+        //     results_search: []
+        // });
+
+        res.redirect("/");
+
+    } else {
+
+        // Query Database given search term
+        let [rowsResultGePostsFromSearch, fields] = await postsModel.getPostsByTextTermSearch(textTermSearched);
+
+        // Search results found
+        if (rowsResultGePostsFromSearch.length) {
+            res.locals.rows_result_get_recent_posts_posts = rowsResultGePostsFromSearch;
+
+            // res.send({
+            //     message: `${rowsResultSearch.length} results found`,
+            //     results_search: rowsResultSearch
+            // });
+
+            res.render(
+                "home",
+                {
+                    
+                });
+
+        }
+
+        // No search results found so give recent posts instead
+        else {
+            let [rowsResultGetRecentPostsPosts, fields] = await postsModel.getPostThumbnailsRecentByAmount(10);
+            res.locals.rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
+
+            // res.send({
+            //     message: "No results where found for your search but here are the 10 most recent posts",
+            //     results_search: rowsResultGetRecentPostsPosts
+            // });
+            res.render(
+                "home",
+                {
+                    
+                });
+        }
+    }
+}
+
+
 
 module.exports = routerIndex;

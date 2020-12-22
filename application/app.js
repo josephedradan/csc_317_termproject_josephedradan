@@ -101,7 +101,7 @@ const loggerMorgan = require("morgan");
 const expressHandlebars = require("express-handlebars");
 const expressSessions = require("express-session");
 const MySQLSession = require("express-mysql-session")(expressSessions);
-const expressFlash = require('express-flash'); // Buggy with express-sessions
+// const expressFlash = require('express-flash'); // Buggy with express-sessions
 
 const routerIndex = require("./controllers/routes/index"); // From routes/index.js
 const routerUsers = require("./controllers/routes/users"); // From users/users.js
@@ -185,6 +185,12 @@ app.use(
         // Sign the cookie
         secret: "session_cookie_secret",
 
+        // Cookie to die because Flash won't let the session die
+        // cookie: {
+        //     maxAge  : new Date(Date.now() + 3600000), //1 Hour
+        //     expires : new Date(Date.now() + 3600000), //1 Hour
+        // },
+
         // Select a session store
         store: mySQLSessionStore,
 
@@ -206,7 +212,7 @@ app.use(express.json()); // Parse response
 app.use(express.urlencoded({ extended: false })); // Parse response
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(expressFlash()); // Buggy with express-sessions
+// app.use(expressFlash()); // Buggy with express-sessions
 
 /* 
 Unmounted middleware user defined
@@ -251,10 +257,19 @@ async function middlewareExpressSessionHandler(req, res, next) {
     // Print the session from the database
     // mySQLPrinter.printSessions();
 
-    // If session.session_username exists
+    // If session.session_username exists (User is logged in)
     if (req.session.session_username) {
         res.locals.session_logged = true;
         res.locals.session_username = req.session.session_username;
+
+
+
+        // res.locals.session_text_term_search = req.session.session_text_term_search;
+
+        // Rest req.session.session_text_term_search
+        // req.session.session_text_term_search = "";
+
+
     }
     
     // Call next middleware
@@ -309,7 +324,7 @@ async function middlewareSaveSessionThenRedirect(req, res, next) {
         }
     });
 
-    // rq.session.save() does not support promise, it's just a callback which is why you can't await i think...
+    // req.session.save() does not support promise, it's just a callback which is why you can't await i think...
     /* 
     req.session.save().then(() => {
         // Get location of Redirect based on res.locals.redirect_last

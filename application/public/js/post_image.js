@@ -78,7 +78,7 @@ function handlerFormPost() {
             // console.log("DEBUG: dataOfData")
             // console.log(dataOfData);
 
-            alert(jsonDataData.message);
+            // alert(jsonDataData.message);
 
             // Redirect the user based on the response
             location.replace(jsonDataData.redirect);

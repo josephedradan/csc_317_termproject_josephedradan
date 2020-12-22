@@ -5,13 +5,15 @@ Github: https://github.com/josephedradan
 Date created: 12/20/20
 
 Purpose:
+    Handles database queries
 
 Details:
 
 Description:
-
+    It's a model...
+    
 Notes:
-
+    DO NOT USE
 IMPORTANT NOTES:
 
 Explanation:
@@ -102,7 +104,7 @@ async function getUserDataAllFromUsername(username) {
 
 }
 
-async function getEmailDataAllFromEmail(email) {
+async function getUserEmailDataAllFromEmail(email) {
 
     let baseSQLQueryGetEmailDataAllFromEmail = "SELECT * FROM users WHERE users_email=?"
 
@@ -130,7 +132,7 @@ async function addUserNewToDatabase(username, email, passwordHashed) {
     return [rowsResultInsertUser, fields]
 }
 
-async function getRecentPostThumbnailsByAmount(limit) {
+async function getPostThumbnailsRecentByAmount(limit) {
     // Query Database fore recent posts
     let baseSqlQueryGetRecentPosts =
         `
@@ -166,7 +168,7 @@ async function addPostNewToDatabase(postTitle, postDescription, postPathFileRela
 }
 
 
-async function search(termSearch, limit=10) {
+async function getPostsByTextTermSearch(termSearch, limit=10) {
     /* 
     The SQl query should technically match getRecentPostThumbnailsByAmount()'s SQl query
         users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created 
@@ -198,15 +200,16 @@ async function search(termSearch, limit=10) {
 
 // V3
 const databaseHandler = {
-    getPostFromPostID: asyncFunctionHandler(getPostFromPostID, "printFunction"),
-    getCommentsFromPostID: asyncFunctionHandler(getCommentsFromPostID, "printFunction"),
     getUserDataSimpleFromUsername: asyncFunctionHandler(getUserDataSimpleFromUsername, "printFunction"),
     getUserDataAllFromUsername: asyncFunctionHandler(getUserDataAllFromUsername, "printFunction"),
-    getEmailDataAllFromEmail: asyncFunctionHandler(getEmailDataAllFromEmail, "printFunction"),
-    getRecentPostThumbnailsByAmount: asyncFunctionHandler(getRecentPostThumbnailsByAmount, "printFunction"),
+    getUserEmailDataAllFromEmail: asyncFunctionHandler(getUserEmailDataAllFromEmail, "printFunction"),
     addUserNewToDatabase: asyncFunctionHandler(addUserNewToDatabase, "printFunction"),
+    getPostsByTextTermSearch: asyncFunctionHandler(getPostsByTextTermSearch, "printFunction"),
+    getPostFromPostID: asyncFunctionHandler(getPostFromPostID, "printFunction"),
+    getPostThumbnailsRecentByAmount: asyncFunctionHandler(getPostThumbnailsRecentByAmount, "printFunction"),
     addPostNewToDatabase: asyncFunctionHandler(addPostNewToDatabase, "printFunction"),
-    search: asyncFunctionHandler(search, "printFunction"),
+    getCommentsFromPostID: asyncFunctionHandler(getCommentsFromPostID, "printFunction"),
+
 }
 
 // V2

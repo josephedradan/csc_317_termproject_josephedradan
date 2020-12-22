@@ -29,7 +29,7 @@ Reference:
 
 // Database connecter
 // const databaseConnector = require("../config/database_connecter");
-const databaseHandler = require("../database/database_handler");
+const postsModel = require("../database/model_posts");
 
 // Debugging printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -37,13 +37,35 @@ const debugPrinter = require('../helpers/debug/debug_printer');
 // Asynchronous Function Middleware Handler
 // const asyncFunctionHandler = require("../decorators/async_function_handler");
 
-async function middlewareGetRecentPosts(req, res, next) {
+async function middlewarePageHomeGetPosts(req, res, next) {
 
+    let rowsResultGetPosts = null;
 
-    // Query the Database for the posts
-    let [rowsResultGetRecentPostsPosts, fields] = await databaseHandler.getRecentPostThumbnailsByAmount(10);
+    if(res.locals.session_text_term_search){
+        /* 
+        Get posts via search
+        
+        */
+        debugPrinter.printSuccess(`Querying via Search`);
 
-    if (rowsResultGetRecentPostsPosts && rowsResultGetRecentPostsPosts.length == 0) {
+        // Query the Database for search term posts
+        let [rowsResultGePostsFromSearch, fields] = await postsModel.getPostsByTextTermSearch(res.locals.session_text_term_search);
+        rowsResultGetPosts = rowsResultGePostsFromSearch;
+
+    } else{
+        /* 
+        Get posts via recent posts
+        
+        */
+        debugPrinter.printSuccess(`Querying via Recent Posts`);
+
+        // Query the Database for the posts
+        let [rowsResultGetRecentPostsPosts, fields] = await postsModel.getPostThumbnailsRecentByAmount(10);
+        
+        rowsResultGetPosts = rowsResultGetRecentPostsPosts
+    }
+
+    if (rowsResultGetPosts && rowsResultGetPosts.length == 0) {
 
         // Don't use flash because it's buggy
         // req.flash("alert_user_error", "there are no posts created yet");
@@ -53,10 +75,8 @@ async function middlewareGetRecentPosts(req, res, next) {
     } else {
 
         // Print the results of the database query
-        debugPrinter.printSuccess("Query to get Recent Posts was Successful!");
-        debugPrinter.printDebug(rowsResultGetRecentPostsPosts);
-
-
+        debugPrinter.printSuccess("Query to get Posts was Successful!");
+        // debugPrinter.printDebug(rowsResultGetPosts);
 
         // rowsResultGetRecentPostsPosts IS AN ARRAY OF OBJECTS
         // rowsResultGetRecentPostsPosts.forEach((element, key, value) => {
@@ -66,7 +86,7 @@ async function middlewareGetRecentPosts(req, res, next) {
 
 
         // Add the results of the database call to the res.locals
-        res.locals.rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
+        res.locals.rows_result_get_recent_posts_posts = rowsResultGetPosts;
 
     }
     next();
@@ -74,7 +94,7 @@ async function middlewareGetRecentPosts(req, res, next) {
 };
 
 const postMiddleware = {
-    getRecentPosts: middlewareGetRecentPosts
+    middlewarePageHomeGetPosts: middlewarePageHomeGetPosts
 
 };
 

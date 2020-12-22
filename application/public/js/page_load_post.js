@@ -36,10 +36,10 @@ function getHTMLHomeCards(arrayObjects) {
     let baseHTML = ""
 
     arrayObjects.forEach((element, key, value) => {
-        console.log(element);
+        // console.log(element);
 
         let tempString =
-        `
+            `
         <div id="id_${element.posts_id}" class="card-container-parent">
         <div class="card-container-body-media">
             <a href="/post/${element.posts_id}">
@@ -64,21 +64,30 @@ function getHTMLHomeCards(arrayObjects) {
 }
 
 
-function executeSearch() {
+function executeSearchServerSide() {
     /* 
     Get the results of a searched term from the server then return it back to the user by overwriting the content of the
     div with id="home-images"
     
+    Notes:
+        This style is old and won't work when you are trying to search when you are on a post, though it won't request a lot of the server
+
     */
+
     let textTemSearched = document.getElementById('input-search-text').value;
+
+    // Reload the page if there is nothing searched
     if (!textTemSearched) {
 
         // Reload the page that resets the session data
         location.replace('/');
         return;
     }
+
     let elementParent = document.getElementById('home-cards');
-    let URLSearch = `posts/search?search=${textTemSearched}`;
+    let URLSearch = `/posts/search?search=${textTemSearched}`;
+    
+    // console.log(URLSearch);
 
     axios.get(URLSearch)
         .then((jsonData) => {
@@ -87,8 +96,8 @@ function executeSearch() {
             // Axios data is should already be json so you just need the value from the data key
             let jsonDataData = jsonData.data;
 
-            // Get the data from teh resultsSearch key
-            let SQLQueryResults = jsonDataData.resultsSearch
+            // Get the data from teh results_search key
+            let SQLQueryResults = jsonDataData.results_search
             // console.log(SQLQueryResults);
 
             let HTMLHomeCards = getHTMLHomeCards(SQLQueryResults);
@@ -96,18 +105,38 @@ function executeSearch() {
 
             // You are assigning the main content not concatenating which will overwrite what's inside 
             elementParent.innerHTML = HTMLHomeCards;
-
+            
+            showCustomFlashMessageThenDelete(`${SQLQueryResults.length} posts found!`, "flash-success");
         })
         .catch((err) => {
-            console.log(`Error: Axios Get Error for ${executeSearch.name}`)
+            console.log(`Error: Axios Get Error for ${executeSearchServerSide.name}`)
             console.log(err);
         });
 }
+function executeSearchURL(){
+    /* 
+    Searching via URL using youtube's style in the URL
+    
+    */
+    let textTemSearched = document.getElementById('div-input-search-text').value;
+
+    // Reload the page if there is nothing searched
+    if (!textTemSearched) {
+
+        // Reload the page that resets the session data
+        location.replace('/');
+        return;
+    }
+
+    let URLSearch = `/results?search_query=${textTemSearched}`;
+    location.replace(URLSearch);
+    return;
+}
 
 function initializeSearchButton() {
-    let buttonSearch = document.getElementById("button-search");
+    let buttonSearch = document.getElementById("div-button-search");
     if (buttonSearch) {
-        buttonSearch.onclick = executeSearch;
+        buttonSearch.onclick = executeSearchURL;
     }
 }
 
@@ -134,6 +163,22 @@ function initializeLogoutButton() {
             })
         };
     };
+}
+
+function showCustomFlashMessageThenDelete(message, flashClass, delay = 2000, speed = 100, step = 0.1) {
+
+    let HTMLFlashMessage =
+        `
+        <div id="flash-message">
+            <div class=${flashClass}>${message}</div>
+        </div>
+        `
+
+    let elementParent = document.getElementById('flash-message-container');
+    elementParent.innerHTML = HTMLFlashMessage;
+
+    fadeThenDeleteElementByID("flash-message", delay, speed, step);
+
 }
 
 

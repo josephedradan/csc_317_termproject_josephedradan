@@ -7,7 +7,10 @@
 
     {{!-- Get the styling --}}
     <link rel="stylesheet" type="text/css" href="/css/style.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    {{!-- Make life easier and let every page have axios --}}
+    <script defer type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     {{!-- Javascript to run before the page loads --}}
     <script type="text/javascript" src="/js/page_load_pre.js" ></script>
@@ -24,7 +27,7 @@
         <script defer type="text/javascript" src={{this}} ></script>
     {{/each}}
 
-    <title>{{title}}</title>
+    <title>{{page_title}}</title>
 </head>
 <body>
     <div id="body-container" class="div-standard">
@@ -32,9 +35,14 @@
             {{> header}}
         </div>
         <div id="body-container-body" class="div-standard">
+
+            {{!-- 
+            Is the below even useful right now?
             {{#if (expressHelperObjectEmpty messages)}}
-                {{> flash-message}}
-            {{/if}}
+            {{/if}} 
+             --}}
+       
+            {{> flash-message}}
             {{{body}}}
         </div>
         <div id="body-container-footer" >

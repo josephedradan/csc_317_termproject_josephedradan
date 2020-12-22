@@ -174,24 +174,34 @@ function asyncFunctionHandler(functionGiven, debugPrinterFunction = "printMiddle
 
 function middlewareErrorHandler(err, ...args) {
     /* 
-    This function deals with the middleware errors
+    This function deals with the middleware errors.
+    You want to session save because of express-flash so you can get the error, but if you are logged out then don't save
+    because you just add garbage to the sessions table that you cannot delete.
     */
 
     req = args[0];
     res = args[1];
     next = args[2];
 
-    // Save session before handling the error
-    req.session.save((error2) => {
-        // Handle errors when saving
-        if (error2) {
-            next(error2);
-        } 
-        // If successful after saving
-        else {
-            middlewareErrorHandlerHelper(err,...args);
-        }
-    });
+
+    if(req.session.session_username){
+
+        // Save session before handling the error
+        req.session.save((error2) => {
+            // Handle errors when saving
+            if (error2) {
+                next(error2);
+            } 
+            // If successful after saving
+            else {
+                middlewareErrorHandlerHelper(err,...args);
+            }
+        });
+    } else{
+        middlewareErrorHandlerHelper(err,...args);
+    }
+
+
 
 }
 
@@ -209,7 +219,7 @@ function middlewareErrorHandlerHelper(err, ...args) {
         // debugPrinter.printError(err);
 
         // Alert the user error
-        req.flash('alert_user_error', err.getMessage());
+        // req.flash('alert_user_error', err.getMessage());
 
         /* 
         Modify the res.json for the user from the custom error (TODO: ABSTRACT THE Custom Errors)
@@ -227,7 +237,7 @@ function middlewareErrorHandlerHelper(err, ...args) {
         // debugPrinter.printError(err);
 
         // Alert the user error
-        req.flash('alert_user_error', err.getMessage());
+        // req.flash('alert_user_error', err.getMessage());
 
         /* 
         Modify the res.json for the user from the custom error (TODO: ABSTRACT THE Custom Errors)

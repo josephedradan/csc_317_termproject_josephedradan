@@ -31,7 +31,7 @@ const crypto = require('crypto');
 // const databaseConnector = require('../config/database_connecter');
 
 // Database Handler
-const databaseHandler = require('../database/database_handler')
+const postModel = require('../database/model_posts')
 
 // Custom user error class
 const PostError = require('../helpers/error/post_error');
@@ -132,7 +132,7 @@ async function createPost(req, res, next) {
     // debugPrinter.printSuccess(postPathThumbnailRelative);
 
     // Make database Insert Query (Needs to be sequential)
-    const [rowsResultInsertPost, fields] = await databaseHandler.addPostNewToDatabase(
+    const [rowsResultInsertPost, fields] = await postModel.addPostNewToDatabase(
         postTitle,
         postDescription,
         postPathFileRelative,
@@ -157,7 +157,7 @@ async function createPost(req, res, next) {
 
     // Last added post's ID
     let postIDLast = rowsResultInsertPost["insertId"];
-    
+
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
     res.locals.redirect_last = "/post/" + postIDLast;
 
@@ -180,43 +180,105 @@ async function createPost(req, res, next) {
 };
 
 
-routerPosts.get('/search', asyncFunctionHandler(search))
+routerPosts.get('/search', asyncFunctionHandler(middlewareSearch))
 
-async function search(req, res, next) {
+async function middlewareSearch(req, res, next) {
     /* 
     Allow searching on website
     
+    Notes:
+        This middleware is not hooked up because this way of sending back and letting the uer handle the posts sucks since you can't
+        search while you are on a post because this middleware REQUIRES you to be on the home page!
+
+    Reference:
+        Node.js: how to get the URL to the page which called a POST from the request body?
+            https://stackoverflow.com/questions/53663004/node-js-how-to-get-the-url-to-the-page-which-called-a-post-from-the-request-bod
+
+        Use dynamic (variable) string as regex pattern in JavaScript
+            https://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
     */
+
+    /* 
+    Check if req.headers.referer has more stuff in its string than req.headers.host
+    If req.headers.referer has more stuff in its url then redirect the user to the home page then search
+
+    */
+
     let textTermSearched = req.query.search;
 
-    debugPrinter.printSuccess(textTermSearched);
+    debugPrinter.printSuccess(`Search Term: ${textTermSearched}`);
+
+    // let regexPatternBaseURL = new RegExp(req.headers.host + "\/(.+)"); // do ", g" for global, but it's not needed here
+
+    // Url of the referer
+    // let URLReferer = req.headers.referer;
+
+    // debugPrinter.printWarning(req.headers.referer);
+    // debugPrinter.printWarning(req.headers.host);
+    // debugPrinter.printWarning(req.hostname);
+
+    /*
+    Check if the host and the referer are the same
+    If both urls are different (a match has occurred) then redirect and search
+
+    Notes:
+        Redirects/Renders won't work if this get request is handled by the user
+    */
+    /*
+     if (URLReferer.match(regexPatternBaseURL)){
+         // debugPrinter.printWarning(URLReferer.match(regexPatternBaseURL));
+         debugPrinter.printWarning("Current page is not the home page!")
+ 
+         // Put what the user searched into the session
+         req.session.session_text_term_search = textTermSearched;
+         
+         // Save Session
+         req.session.save((err) => {
+             // Handle errors when saving
+             if (err) {
+                 next(err);
+             } 
+ 
+             // If successful after saving
+             else {
+                 debugPrinter.printDebug(`Redirecting User to: /`);
+     
+                 // Redirect home
+                 res.redirect("/");
+             }
+             
+         });
+         return;
+ 
+     }
+    */
 
     if (!textTermSearched) {
-        // No search
+        // If nothing is given then return an empty results_search
         res.send({
-            resultsStatus: "info",
+            results_status: "info",
             message: "No search term given.",
-            resultsSearch: []
+            results_search: []
         });
     } else {
 
         // Query Database given search term
-        let [rowsResultSearch, fields] = await databaseHandler.search(textTermSearched);
+        let [rowsResultGePostsFromSearch, fields] = await postModel.getPostsByTextTermSearch(textTermSearched);
 
         // Search results found
-        if (rowsResultSearch.length) {
+        if (rowsResultGePostsFromSearch.length) {
             res.send({
-                message: `${rowsResultSearch.length} results found`,
-                resultsSearch: rowsResultSearch
+                message: `${rowsResultGePostsFromSearch.length} results found`,
+                results_search: rowsResultGePostsFromSearch
             });
-        } 
+        }
 
         // No search results found so give recent posts instead
         else {
-            let [rowsResultGetRecentPostsPosts, fields] = await databaseHandler.getRecentPostThumbnailsByAmount(10);
+            let [rowsResultGetRecentPostsPosts, fields] = await postModel.getPostThumbnailsRecentByAmount(10);
             res.send({
                 message: "No results where found for your search but here are the 10 most recent posts",
-                resultsSearch: rowsResultGetRecentPostsPosts
+                results_search: rowsResultGetRecentPostsPosts
             });
         }
     }
