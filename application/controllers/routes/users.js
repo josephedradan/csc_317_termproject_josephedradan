@@ -33,7 +33,7 @@ const bcrypt = require("bcrypt");
 // const databaseConnector = require("../config/database_connecter");
 
 // Database Handler
-const usersModel = require('../database/model_users')
+const usersModel = require('../../models/model_users')
 
 // Debugging printer
 const debugPrinter = require("../helpers/debug/debug_printer");
@@ -50,6 +50,13 @@ const asyncFunctionHandler = require("../decorators/async_function_handler");
 routerUsers.post("/register", asyncFunctionHandler(middlewareRegister));
 
 async function middlewareRegister(req, res, next) {
+    /* 
+    
+    Notes:
+        This function is handled Server side so we have to 
+            res.locals.locals_redirect_last
+    
+    */
     // req Comes with a bunch of garbage
     // Body of the POST
     debugPrinter.printDebug(req.body);
@@ -77,15 +84,16 @@ async function middlewareRegister(req, res, next) {
     // Check if the Email already exists
     const promiseEmail = usersModel.getUserEmailDataAllFromEmail(email);
 
-    debugPrinter.printSuccess(promiseUsername);
-    debugPrinter.printSuccess(promiseEmail);
-
     // Call promises concurrently
     [resultSQLQueryUsername, resultSQLQueryEmail] = await Promise.all([promiseUsername, promiseEmail])
 
     // Result contains the rows from SQL query and the fields object
     rowsResultUsername = resultSQLQueryUsername[0];
     rowsResultEmail = resultSQLQueryEmail[0];
+
+    // Success in finding a user name and Email in the database (If you find something in the database then either one already exists)
+    // debugPrinter.printSuccess(rowsResultUsername);
+    // debugPrinter.printSuccess(rowsResultEmail);
 
     // Check username exists in database then check its length
     if (rowsResultUsername && rowsResultUsername.length) {
@@ -121,7 +129,7 @@ async function middlewareRegister(req, res, next) {
     //     email,
     //     passwordHashed,
     // ]);
-    usersModel.addUserNewToDatabase(username, email, passwordHashed);
+    usersModel.insertUserToDatabase(username, email, passwordHashed);
 
     let stringSuccess2 = `Query Successful`;
     debugPrinter.printSuccess(stringSuccess2);
@@ -130,7 +138,7 @@ async function middlewareRegister(req, res, next) {
     // req.flash('alert_account_creation', "Your can now log in");
 
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
-    res.locals.redirect_last = "/login";
+    res.locals.locals_redirect_last = "/login";
 
     /* 
     Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
@@ -139,7 +147,7 @@ async function middlewareRegister(req, res, next) {
     VERY IMPORTANT NOTE:
         THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
     */
-    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.locals.redirect_last })
+    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.locals.locals_redirect_last })
 
     // Call next middleware (Will probably call saveSessionThenRedirect();)
     next();
@@ -197,9 +205,10 @@ async function middlewareLogin(req, res, next) {
             // Set user as logged in in Sessions
             req.session.session_username = db_username; // await does nothing here
             req.session.session_user_id = db_id; // await does nothing here
+
             // Assign res locals immediately (Doesn't matter since we are going to redirect to home anyways)
-            // res.locals.session_logged = true;
-            // res.locals.session_username = req.session.session_username;
+            // res.locals.locals_session_logged = true;
+            // res.locals.locals_session_username = req.session.session_username;
 
             // Debug print successful login
             let stringSuccess = `User ${db_username} has logged in`;
@@ -212,7 +221,7 @@ async function middlewareLogin(req, res, next) {
             debugPrinter.printDebug(req.session);
 
             // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
-            res.locals.redirect_last = "/";
+            res.locals.locals_redirect_last = "/";
 
             /* 
             Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
@@ -221,7 +230,7 @@ async function middlewareLogin(req, res, next) {
             VERY IMPORTANT NOTE:
             THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST ARE HANDLED BY FRONTEND JS
             */
-            // res.json({status:200, message:"User Login was Successful!", "redirect": res.locals.redirect_last})
+            // res.json({status:200, message:"User Login was Successful!", "redirect": res.locals.locals_redirect_last})
 
             // Call next middleware (Will probably call saveSessionThenRedirect();)
             next();
@@ -291,7 +300,11 @@ async function middlewareLogout(req, res, next) {
                 You need res.json or the fetch on the frontend js WILL HANG!
             
             */
-            res.json({ status: "OK", message: "use has logged out." });
+            res.json(
+                {
+                    status: "OK",
+                    message: "use has logged out."
+                });
         }
     });
 }

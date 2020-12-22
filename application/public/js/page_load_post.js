@@ -115,10 +115,10 @@ function executeSearchServerSide() {
 }
 function executeSearchURL(){
     /* 
-    Searching via URL using youtube's style in the URL
+    Searching via URL using YouTube's style in the URL
     
     */
-    let textTemSearched = document.getElementById('div-input-search-text').value;
+    let textTemSearched = document.getElementById('search-text').value;
 
     // Reload the page if there is nothing searched
     if (!textTemSearched) {
@@ -134,7 +134,7 @@ function executeSearchURL(){
 }
 
 function initializeSearchButton() {
-    let buttonSearch = document.getElementById("div-button-search");
+    let buttonSearch = document.getElementById("search-button");
     if (buttonSearch) {
         buttonSearch.onclick = executeSearchURL;
     }

@@ -29,7 +29,7 @@ Reference:
 
 // Database connecter
 // const databaseConnector = require("../config/database_connecter");
-const postsModel = require("../database/model_posts");
+const postsModel = require("../../models/model_posts");
 
 // Debugging printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -86,7 +86,7 @@ async function middlewarePageHomeGetPosts(req, res, next) {
 
 
         // Add the results of the database call to the res.locals
-        res.locals.rows_result_get_recent_posts_posts = rowsResultGetPosts;
+        res.locals.locals_rows_result_get_recent_posts_posts = rowsResultGetPosts;
 
     }
     next();

@@ -26,7 +26,7 @@ Reference:
 const debugPrinter = require('./debug_printer');
 
 // Database connecter
-const databaseConnector = require('../../config/database_connecter');
+const databaseConnector = require('../../../config/database_connecter');
 
 async function printSessions() {
     /* 

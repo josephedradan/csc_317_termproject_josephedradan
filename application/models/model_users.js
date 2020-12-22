@@ -23,7 +23,7 @@ Reference:
 const databaseConnector = require('../config/database_connecter');
 
 // Asynchronous Function Middleware Handler
-const asyncFunctionHandler = require("../decorators/async_function_handler");
+const asyncFunctionHandler = require("../controllers/decorators/async_function_handler");
 
 async function getUserDataSimpleFromUsername(username) {
 
@@ -72,7 +72,7 @@ async function getUserEmailDataAllFromEmail(email) {
     return [rowsResultEmailData, fields]
 }
 
-async function addUserNewToDatabase(username, email, passwordHashed) {
+async function insertUserToDatabase(username, email, passwordHashed) {
 
     // Query insert
     let baseSQLQueryInsert =
@@ -87,11 +87,27 @@ async function addUserNewToDatabase(username, email, passwordHashed) {
     return [rowsResultInsertUser, fields]
 }
 
+async function getUserIDFromUsername(username){
+    // Query get user ID 
+    let baseSQLQueryGetUserID =
+        "SELECT users.users_id FROM users WHERE users.users_username=?"
+
+    // Check if the Email already exists
+    let [rowsResultUserID, fields] = await databaseConnector.execute(
+        baseSQLQueryGetUserID,
+        [username]
+    );
+
+    return [rowsResultUserID, fields]
+}
+
+
 const usersModel = {
+    getUserIDFromUserName: asyncFunctionHandler(getUserIDFromUsername, "printFunction"),
     getUserDataSimpleFromUsername: asyncFunctionHandler(getUserDataSimpleFromUsername, "printFunction"),
     getUserDataAllFromUsername: asyncFunctionHandler(getUserDataAllFromUsername, "printFunction"),
     getUserEmailDataAllFromEmail: asyncFunctionHandler(getUserEmailDataAllFromEmail, "printFunction"),
-    addUserNewToDatabase: asyncFunctionHandler(addUserNewToDatabase, "printFunction"),
+    insertUserToDatabase: asyncFunctionHandler(insertUserToDatabase, "printFunction"),
 }
 
 module.exports = usersModel;

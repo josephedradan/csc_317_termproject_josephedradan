@@ -24,8 +24,7 @@ Reference:
 const databaseConnector = require('../config/database_connecter');
 
 // Asynchronous Function Middleware Handler
-const asyncFunctionHandler = require("../decorators/async_function_handler");
-
+const asyncFunctionHandler = require("../controllers/decorators/async_function_handler");
 
 async function getPostFromPostID(post_id) {
     // SQL Query to get post id
@@ -64,7 +63,7 @@ async function getPostThumbnailsRecentByAmount(limit) {
     return [rowsResultGetRecentPostsPosts, fields];
 }
 
-async function addPostNewToDatabase(postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id) {
+async function insertPostToDatabase(postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id) {
     // SQl Query to insert image information
     let baseSQLQueryInsertPostNew =
         `
@@ -115,7 +114,7 @@ const postsModel = {
     getPostsByTextTermSearch: asyncFunctionHandler(getPostsByTextTermSearch, "printFunction"),
     getPostFromPostID: asyncFunctionHandler(getPostFromPostID, "printFunction"),
     getPostThumbnailsRecentByAmount: asyncFunctionHandler(getPostThumbnailsRecentByAmount, "printFunction"),
-    addPostNewToDatabase: asyncFunctionHandler(addPostNewToDatabase, "printFunction"),
+    insertPostToDatabase: asyncFunctionHandler(insertPostToDatabase, "printFunction"),
 }
 
 module.exports = postsModel;

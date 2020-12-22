@@ -23,11 +23,11 @@
     Load Specific JS for the page given from index.js
 
      --}}
-    {{#each js_files}}
+    {{#each render_js_files}}
         <script defer type="text/javascript" src={{this}} ></script>
     {{/each}}
 
-    <title>{{page_title}}</title>
+    <title>{{render_page_title}}</title>
 </head>
 <body>
     <div id="body-container" class="div-standard">

@@ -31,7 +31,7 @@ const crypto = require('crypto');
 // const databaseConnector = require('../config/database_connecter');
 
 // Database Handler
-const postModel = require('../database/model_posts')
+const postModel = require('../../models/model_posts')
 
 // Custom user error class
 const PostError = require('../helpers/error/post_error');
@@ -132,7 +132,7 @@ async function createPost(req, res, next) {
     // debugPrinter.printSuccess(postPathThumbnailRelative);
 
     // Make database Insert Query (Needs to be sequential)
-    const [rowsResultInsertPost, fields] = await postModel.addPostNewToDatabase(
+    const [rowsResultInsertPost, fields] = await postModel.insertPostToDatabase(
         postTitle,
         postDescription,
         postPathFileRelative,
@@ -141,13 +141,10 @@ async function createPost(req, res, next) {
 
     // debugPrinter.printRouter(rowsResultInsertPost);
 
-    // Check if Insert query was successful in being uploaded to the database
+    // Check if query insert file was successful
     if (rowsResultInsertPost && rowsResultInsertPost.affectedRows) {
         debugPrinter.printSuccess(`File uploaded by ${req.session.session_username} was successful!`);
     } else {
-
-        // The below should be handled by asyncFunctionHandler buy 
-        // res.json({status:"OK", message:"Post was not Successful!", redirect: res.redirect.redirect_last})
 
         throw new PostError(400, `File uploaded by ${req.session.session_username} was not Successful!`, '/postImage');
     };
@@ -159,7 +156,7 @@ async function createPost(req, res, next) {
     let postIDLast = rowsResultInsertPost["insertId"];
 
     // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
-    res.locals.redirect_last = "/post/" + postIDLast;
+    res.locals.locals_redirect_last = "/post/" + postIDLast;
 
     /* 
     Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
@@ -172,7 +169,7 @@ async function createPost(req, res, next) {
     res.json({
         status: 200,
         message: `${req.session.session_username} your upload successful!`,
-        "redirect": res.locals.redirect_last
+        "redirect": res.locals.locals_redirect_last
     })
 
     // Call next middleware (Will probably call saveSessionThenRedirect();)

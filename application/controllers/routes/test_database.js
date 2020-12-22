@@ -22,7 +22,7 @@ Reference:
 */
 const express = require('express');
 const routerDatabaseTest = express.Router();
-const database = require('../config/database_connecter');
+const database = require('../../config/database_connecter');
 
 
 // // TODO: add async

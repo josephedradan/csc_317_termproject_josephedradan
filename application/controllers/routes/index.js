@@ -27,8 +27,8 @@ const routerIndex = express.Router();
 // const databaseConnector = require('../config/database_connecter');
 
 // Database Handler
-const postsModel = require('../database/model_posts')
-const commentsModel = require('../database/model_comments')
+const postsModel = require('../../models/model_posts')
+const commentsModel = require('../../models/model_comments')
 
 // Debug printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -51,8 +51,8 @@ function middlewarePageHome(req, res, next) {
         "home",
         {
             // Order of js files matter
-            // page_title: "Home",
-            // js_files:
+            // render_page_title: "Home",
+            // render_js_files:
             //     [
             //         // "https://unpkg.com/axios/dist/axios.min.js",
             //         // "/js/home_OLD.js",
@@ -72,7 +72,7 @@ async function middlewarePageLogin(req, res, next) {
     res.render(
         "login",
         {
-            // page_title: "Login"
+            // render_page_title: "Login"
         });
 
 };
@@ -85,8 +85,8 @@ function middlewarePageRegistration(req, res, next) {
     res.render(
         "registration",
         {
-            // page_title: "Registration",
-            js_files:
+            // render_page_title: "Registration",
+            render_js_files:
                 [
                     "/js/registration.js"
                 ]
@@ -101,7 +101,7 @@ function middlewarePageImagePost(req, res, next) {
     res.render(
         "image-post",
         {
-            // page_title: "Image post"
+            // render_page_title: "Image post"
         });
 };
 
@@ -115,8 +115,8 @@ function middlewarePagePostImage(req, res, next) {
     res.render(
         "post-image",
         {
-            // page_title: "Post Image",
-            js_files:
+            // render_page_title: "Post Image",
+            render_js_files:
                 [
                     // "https://unpkg.com/axios/dist/axios.min.js",
                     "/js/post_image.js",
@@ -160,12 +160,13 @@ async function middlewarePagePost(req, res, next) {
         res.render(
             "post",
             {
-                page_title: postObject["posts_title"],
-                postCurrent: postObject,
+                render_page_title: postObject["posts_title"],
+                render_post_current: postObject,
                 // comments: yeet.convert(rowsResultPostIDComments),
                 // unique: "Post",
             });
-        req.session.viewing = req.params.id;
+
+        // req.session.session_viewing = req.params.post_id;
     } else {
 
         // req.flash("alert_user_error", "This is not the post you are looking for!");
@@ -223,7 +224,7 @@ async function middlewareSearch(req, res, next) {
 
         // Search results found
         if (rowsResultGePostsFromSearch.length) {
-            res.locals.rows_result_get_recent_posts_posts = rowsResultGePostsFromSearch;
+            res.locals.locals_rows_result_get_recent_posts_posts = rowsResultGePostsFromSearch;
 
             // res.send({
             //     message: `${rowsResultSearch.length} results found`,
@@ -241,7 +242,7 @@ async function middlewareSearch(req, res, next) {
         // No search results found so give recent posts instead
         else {
             let [rowsResultGetRecentPostsPosts, fields] = await postsModel.getPostThumbnailsRecentByAmount(10);
-            res.locals.rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
+            res.locals.locals_rows_result_get_recent_posts_posts = rowsResultGetRecentPostsPosts;
 
             // res.send({
             //     message: "No results where found for your search but here are the 10 most recent posts",

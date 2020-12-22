@@ -103,9 +103,12 @@ const expressSessions = require("express-session");
 const MySQLSession = require("express-mysql-session")(expressSessions);
 // const expressFlash = require('express-flash'); // Buggy with express-sessions
 
-const routerIndex = require("./controllers/routes/index"); // From routes/index.js
-const routerUsers = require("./controllers/routes/users"); // From users/users.js
+// Routers
+const routerIndex = require("./controllers/routes/index"); //
+const routerUsers = require("./controllers/routes/users");
 const routerPosts = require("./controllers/routes/posts");
+const routerComments = require("./controllers/routes/comments");
+
 const routerDatabaseTest = require("./controllers/routes/test_database"); // Db testing TODO: FIXME
 
 // Debug printer
@@ -160,7 +163,7 @@ const mySQLSessionStore = new MySQLSession(
     {
         /* Using default options */
     },
-    require("./controllers/config/database_connecter")
+    require("./config/database_connecter")
 );
 
 /* 
@@ -229,7 +232,7 @@ async function middlewareRequestResponseHandler(req, res, next) {
     
     */
     // res.locals (req.locals does not exist)
-    debugPrinter.printDebug(res.locals);
+    // debugPrinter.printDebug(res.locals);
 
     // print request method
     // debugPrinter.printRequest(req.method);
@@ -252,15 +255,15 @@ async function middlewareExpressSessionHandler(req, res, next) {
     This function handles logged in users 
 
     */
-    debugPrinter.printDebug(req.session);
+    // debugPrinter.printDebug(req.session);
 
     // Print the session from the database
     // mySQLPrinter.printSessions();
 
     // If session.session_username exists (User is logged in)
     if (req.session.session_username) {
-        res.locals.session_logged = true;
-        res.locals.session_username = req.session.session_username;
+        res.locals.locals_session_logged = true;
+        res.locals.locals_session_username = req.session.session_username;
 
 
 
@@ -271,7 +274,7 @@ async function middlewareExpressSessionHandler(req, res, next) {
 
 
     }
-    
+
     // Call next middleware
     next();
 }
@@ -287,6 +290,7 @@ app.use("/", routerIndex); // app.locals.settings["/"]
 app.use("/databaseTest", routerDatabaseTest); // app.locals.settings["/databaseTest"]
 app.use("/users", routerUsers); // app.locals.settings["/users"]
 app.use("/posts", routerPosts); // app.locals.settings["/posts"]
+app.use("/comments", routerComments);
 
 // Using my asyncFunctionHandler will cause errors!
 // app.use("/", asyncFunctionHandler(routerIndex, "printRouter")); // app.locals.settings["/"]
@@ -299,45 +303,73 @@ app.use(asyncFunctionHandler(middlewareSaveSessionThenRedirect));
 
 async function middlewareSaveSessionThenRedirect(req, res, next) {
     /* 
-    This function handles the redirect at the end of all next() calls
+    This function handles the redirect at the end of all next() calls if the user is logged in
+
+    Notes:
+        Once you are logged out, express-flash will not work
     
     */
-    // res.locals (req.locals does not exist)
-    debugPrinter.printDebug(res.locals);
 
-    // Must force a save because redirect is TOO FAST COMPARED TO req to write to the Database
-    req.session.save((err) => {
-        // Handle errors when saving
-        if (err) {
-            next(err);
-        } 
-        // If successful after saving
-        else {
+    // Debug res.locals, it may or may not exist
+    // debugPrinter.printDebug("Printing res.locals");
+    // debugPrinter.printDebug(res.locals);
 
-            // Get location of Redirect based on res.locals.redirect_last
-            let location = res.locals.redirect_last;
+    // Get location of Redirect based on res.locals.locals_redirect_last
+    let redirect_last = res.locals.locals_redirect_last;
 
-            debugPrinter.printDebug(`Redirecting User to: ${location}`);
+    if (req.session.session_username) {
+
+        // Must force a save because redirect is TOO FAST COMPARED TO req to write to the Database
+        req.session.save((err) => {
+            // Handle errors when saving
+            if (err) {
+                next(err);
+            }
+            // If successful after saving
+            else {
+
+
+
+                if (redirect_last) {
+                    debugPrinter.printSuccess(`Redirecting User to: ${redirect_last}`);
+
+                    // Redirect user to redirect_last
+                    res.redirect(redirect_last);
+                } else {
+                    debugPrinter.printSuccess(`Redirecting User to: /`);
+
+                    // Redirect user to default
+                    res.redirect("/");
+                }
+
+            }
+        });
+
+        // req.session.save() does not support promise, it's just a callback which is why you can't await i think...
+        /* 
+        req.session.save().then(() => {
+            // Get location of Redirect based on res.locals.locals_redirect_last
+            let location = res.locals.locals_redirect_last;
 
             // Redirect user
             res.redirect(location);
+        }).catch(err => {
+            next(err);
+        })
+        */
+
+    } else {
+        if (redirect_last) {
+            debugPrinter.printWarning(`User is not logged in, no session exists and will not not save! Will redirect to: ${redirect_last}`)
+            // Redirect user to redirect_last
+            res.redirect(redirect_last);
+
+        } else {
+            debugPrinter.printWarning(`User is not logged in, no session exists and will not not save! Will redirect to: /`)
+            // Redirect user to default
+            res.redirect("/");
         }
-    });
-
-    // req.session.save() does not support promise, it's just a callback which is why you can't await i think...
-    /* 
-    req.session.save().then(() => {
-        // Get location of Redirect based on res.locals.redirect_last
-        let location = res.locals.redirect_last;
-
-        // Redirect user
-        res.redirect(location);
-    }).catch(err => {
-        next(err);
-    })
-    */
-
-
+    }
 }
 
 /* 

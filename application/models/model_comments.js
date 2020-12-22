@@ -24,9 +24,9 @@ Reference:
 const databaseConnector = require('../config/database_connecter');
 
 // Asynchronous Function Middleware Handler
-const asyncFunctionHandler = require("../decorators/async_function_handler");
+const asyncFunctionHandler = require("../controllers/decorators/async_function_handler");
 
-async function getCommentsFromPostID(post_id) {
+async function getCommentsFromPostID(postID) {
     // SQL Query to get post ID
     let baseSQLQueryGetCommentsFromPostID =
         `
@@ -43,14 +43,31 @@ async function getCommentsFromPostID(post_id) {
     // Get Post from post_id
     let [rowsResultPostIDComments, fields] = await databaseConnector.query(
         baseSQLQueryGetCommentsFromPostID,
-        [post_id]);
+        [postID]);
 
-    return [rowsResultPostIDComments, fields]
+    return [rowsResultPostIDComments, fields];
+}
+
+async function insertCommentToDatabase(userID, postID, comment){
+    
+    // Query to insert comment
+    let baseSQLQueryInsertComment =
+    `
+    INSERT INTO comments (comments_fk_users_id, comments_fk_posts_id, comments_comment, comments_date_created)
+    VALUES(?, ?, ?, now())
+    `
+
+    // Result of query
+    let [rowsResultInsertComment, fields] = await databaseConnector.query(
+        baseSQLQueryInsertComment,
+        [userID, postID, comment]);
+
+    return [rowsResultInsertComment, fields];
 }
 
 const commentsModel = {
     getCommentsFromPostID: asyncFunctionHandler(getCommentsFromPostID, "printFunction"),
-
+    insertCommentToDatabase: asyncFunctionHandler(insertCommentToDatabase, "printFunction"),
 }
 
 
