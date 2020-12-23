@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`users` (
   `users_password` VARCHAR(128) NOT NULL,
   `users_usertype` INT NOT NULL DEFAULT 0,
   `users_active` INT NOT NULL DEFAULT 0,
-  `users_data_created` DATETIME NOT NULL DEFAULT now(),
+  `users_date_created` DATETIME NOT NULL DEFAULT now(),
   PRIMARY KEY (`users_id`),
   UNIQUE INDEX `users_id_UNIQUE` (`users_id` ASC) VISIBLE,
   UNIQUE INDEX `users_username_UNIQUE` (`users_username` ASC) VISIBLE,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`users` (
 ENGINE = InnoDB;
 
 
--- -------------------------------------------users----------
+-- -----------------------------------------------------
 -- Table `csc_317_termproject`.`posts`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`posts` (
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`posts` (
   `posts_path_thumbnail` VARCHAR(4096) NOT NULL,
   `posts_active` INT NOT NULL DEFAULT 0,
   `posts_date_created` DATETIME NOT NULL DEFAULT now(),
-  `posts_fk_users_id` INT UNSIGNED NOT NULL,
+  `posts_fk_users_id` INT NOT NULL,
   PRIMARY KEY (`posts_id`),
   UNIQUE INDEX `posts_id_UNIQUE` (`posts_id` ASC) VISIBLE,
   INDEX `posts_fk_users_id_FK_users_id` (`posts_fk_users_id` ASC) VISIBLE,
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `csc_317_termproject`.`comments` (
   `comments_id` INT NOT NULL AUTO_INCREMENT,
   `comments_comment` LONGTEXT NOT NULL,
   `comments_date_created` DATETIME NOT NULL DEFAULT now(),
-  `comments_fk_users_id` INT UNSIGNED NOT NULL,
-  `comments_fk_posts_id` INT UNSIGNED NOT NULL,
+  `comments_fk_users_id` INT NOT NULL,
+  `comments_fk_posts_id` INT NOT NULL,
   PRIMARY KEY (`comments_id`),
   UNIQUE INDEX `comments_id_UNIQUE` (`comments_id` ASC) VISIBLE,
   INDEX `comments_fk_users_id_FK_users_id` (`comments_fk_users_id` ASC) VISIBLE,

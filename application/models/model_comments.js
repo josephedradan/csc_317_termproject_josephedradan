@@ -37,7 +37,7 @@ async function getCommentsFromPostID(postID) {
         ON users.users_id=comments.comments_fk_users_id 
         ON posts.posts_id=comments.comments_fk_posts_id 
         WHERE posts.posts_id=?
-        ORDER BY comments.comments_date_created DESC    
+        ORDER BY comments.comments_date_created ASC    
         `;
 
     // Get Post from post_id

@@ -63,6 +63,25 @@ async function getPostThumbnailsRecentByAmount(limit) {
     return [rowsResultGetRecentPostsPosts, fields];
 }
 
+async function getPostsByUsername(username, limit=10) {
+    // Query Database fore recent posts
+    let baseSqlQueryGetRecentPosts =
+        `
+        SELECT users.users_username, posts.posts_id, posts.posts_title, posts.posts_description, posts.posts_path_thumbnail, posts.posts_date_created 
+        FROM users 
+        JOIN posts ON users.users_id=posts.posts_fk_users_id
+        WHERE users.users_username = ?
+        ORDER BY posts.posts_date_created DESC LIMIT ?;
+        `
+
+    // Query the Database for the posts
+    let [rowsResultGetRecentPostsPosts, fields] = await databaseConnector.execute(
+        baseSqlQueryGetRecentPosts,
+        [username, limit]);
+
+    return [rowsResultGetRecentPostsPosts, fields];
+}
+
 async function insertPostToDatabase(postTitle, postDescription, postPathFileRelative, postPathThumbnailRelative, fk_user_id) {
     // SQl Query to insert image information
     let baseSQLQueryInsertPostNew =
@@ -114,6 +133,7 @@ const postsModel = {
     getPostsByTextTermSearch: asyncFunctionHandler(getPostsByTextTermSearch, "printFunction"),
     getPostFromPostID: asyncFunctionHandler(getPostFromPostID, "printFunction"),
     getPostThumbnailsRecentByAmount: asyncFunctionHandler(getPostThumbnailsRecentByAmount, "printFunction"),
+    getPostsByUsername: asyncFunctionHandler(getPostsByUsername, "printFunction"),
     insertPostToDatabase: asyncFunctionHandler(insertPostToDatabase, "printFunction"),
 }
 

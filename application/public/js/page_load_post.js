@@ -64,7 +64,7 @@ function getHTMLHomeCards(arrayObjects) {
 }
 
 
-function executeSearchServerSide() {
+function executeSearchServer() {
     /* 
     Get the results of a searched term from the server then return it back to the user by overwriting the content of the
     div with id="home-images"
@@ -109,11 +109,11 @@ function executeSearchServerSide() {
             showCustomFlashMessageThenDelete(`${SQLQueryResults.length} posts found!`, "flash-success");
         })
         .catch((err) => {
-            console.log(`Error: Axios Get Error for ${executeSearchServerSide.name}`)
+            console.log(`Error: Axios Get Error for ${executeSearchServer.name}`)
             console.log(err);
         });
 }
-function executeSearchURL(){
+function executeSearchClient(){
     /* 
     Searching via URL using YouTube's style in the URL
     
@@ -136,7 +136,7 @@ function executeSearchURL(){
 function initializeSearchButton() {
     let buttonSearch = document.getElementById("search-button");
     if (buttonSearch) {
-        buttonSearch.onclick = executeSearchURL;
+        buttonSearch.onclick = executeSearchClient;
     }
 }
 

@@ -255,6 +255,7 @@ async function middlewareExpressSessionHandler(req, res, next) {
     This function handles logged in users 
 
     */
+    // debugPrinter.printSuccess("Session")
     // debugPrinter.printDebug(req.session);
 
     // Print the session from the database
@@ -327,9 +328,6 @@ async function middlewareSaveSessionThenRedirect(req, res, next) {
             }
             // If successful after saving
             else {
-
-
-
                 if (redirect_last) {
                     debugPrinter.printSuccess(`Redirecting User to: ${redirect_last}`);
 

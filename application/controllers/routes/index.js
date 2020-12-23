@@ -29,6 +29,7 @@ const routerIndex = express.Router();
 // Database Handler
 const postsModel = require('../../models/model_posts')
 const commentsModel = require('../../models/model_comments')
+const usersModel = require('../../models/model_users')
 
 // Debug printer
 const debugPrinter = require('../helpers/debug/debug_printer');
@@ -38,6 +39,7 @@ const middlewareRouteProtectors = require('../middleware/middleware_route_protec
 
 // middlewareGetRecentPosts
 const middlewareGetPosts = require('../middleware/middleware_get_posts');
+
 
 // Asynchronous Function Middleware Handler
 const asyncFunctionHandler = require("../decorators/async_function_handler");
@@ -145,25 +147,28 @@ async function middlewarePagePost(req, res, next) {
 
     // Get post ID from url
     let postIDGiven = req.params.post_id;
-    
+
     // Get Post from post_id
-    let [resultsSQLPostID, fields] = await postsModel.getPostFromPostID(postIDGiven);
+    let [resultsSQLPostFromPostID, fields] = await postsModel.getPostFromPostID(postIDGiven);
 
     // Post object
-    let postObject = resultsSQLPostID[0];
-        
-    if (resultsSQLPostID && resultsSQLPostID.length) {
+    let postObject = resultsSQLPostFromPostID[0];
+
+    if (resultsSQLPostFromPostID && resultsSQLPostFromPostID.length) {
 
         // Get Post from post_id
         let [rowsResultPostIDComments, fields2] = await commentsModel.getCommentsFromPostID(postIDGiven);
-
+        // debugPrinter.printSuccess(rowsResultPostIDComments);
         res.render(
             "post",
             {
                 render_page_title: postObject["posts_title"],
                 render_post_current: postObject,
-                // comments: yeet.convert(rowsResultPostIDComments),
-                // unique: "Post",
+                render_post_comments: rowsResultPostIDComments,
+                render_js_files:
+                    [
+                        "/js/post_comment.js"
+                    ]
             });
 
         // req.session.session_viewing = req.params.post_id;
@@ -180,6 +185,9 @@ async function middlewareSearch(req, res, next) {
     /* 
     Allow searching on website
     
+    Notes:
+        This is handled Server side
+
     Reference:
         Node.js: how to get the URL to the page which called a POST from the request body?
             https://stackoverflow.com/questions/53663004/node-js-how-to-get-the-url-to-the-page-which-called-a-post-from-the-request-bod
@@ -234,7 +242,7 @@ async function middlewareSearch(req, res, next) {
             res.render(
                 "home",
                 {
-                    
+
                 });
 
         }
@@ -251,12 +259,53 @@ async function middlewareSearch(req, res, next) {
             res.render(
                 "home",
                 {
-                    
+
                 });
         }
     }
 }
 
+routerIndex.get("/user/:username([a-zA-Z0-9_]+)", asyncFunctionHandler(middlewareUserPosts));
 
+async function middlewareUserPosts(req, res, next) {
+    /* 
+    Check the users posts
+
+    Notes:
+        This is handled Server side
+    
+    */
+
+
+    // Get post ID from url
+    let username = req.params.username;
+
+    // Check if the Username already exists
+    const rowsResultUsername = await usersModel.getUserDataAllFromUsername(username);
+
+    // Check username is not in the database
+    if (!rowsResultUsername && !rowsResultUsername.length) {
+        let stringFailure = `Username: ${username} does not exist!`;
+        debugPrinter.printError(stringFailure);
+        throw new UserError(
+            400,
+            stringFailure,
+            "/",
+        );
+    }
+
+    // Query Database given search term
+    let [rowsResultGePostsByUsername, fields] = await postsModel.getPostsByUsername(username);
+
+    debugPrinter.printSuccess(rowsResultGePostsByUsername);
+    res.locals.locals_rows_result_get_recent_posts_posts = rowsResultGePostsByUsername;
+
+    // Ghetto solution using home as the template
+    res.render(
+        "home",
+        {
+
+        });
+}
 
 module.exports = routerIndex;

@@ -3,7 +3,9 @@
         <div class="post-container-parent">
             <div class="post-content-header">
                 <h3 class="post-content-header-title">{{render_post_current.posts_title}}</h3>
-                <h5 class="post-content-header-author">{{render_post_current.posts_users_username}}</h5>
+                <a href="/user/{{render_post_current.users_username}}" class="username-link">
+                    <h5 class="post-content-header-author">{{render_post_current.users_username}}</h5>
+                </a>
                 <h5 class="post-content-header-date">{{render_post_current.posts_date_created}}</h5>
             </div>
             <div class="post-container-body-media">
@@ -13,6 +15,7 @@
                 <p class="">{{render_post_current.posts_description}}
                 </p>
             </div>
+            {{> comments}}
         </div>
     </div>
 </div>

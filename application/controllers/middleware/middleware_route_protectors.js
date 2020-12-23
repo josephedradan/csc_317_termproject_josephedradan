@@ -27,11 +27,11 @@ Reference:
 const debugPrinter = require("../helpers/debug/debug_printer");
 
 // Make routeProtectors an empty object
-const routeProtectors = {};
+const middlewareRouteProtectors = {};
 
 // Router protector to prevent User from accessing pages if they are not logged in
 // routeProtectors.checkIfLoggedIn = asyncFunctionHandler(checkIfLoggedIn);
-routeProtectors.checkIfLoggedIn = checkIfLoggedIn;
+middlewareRouteProtectors.checkIfLoggedIn = checkIfLoggedIn;
 
 async function checkIfLoggedIn (req, res, next) {
     /* 
@@ -51,4 +51,4 @@ async function checkIfLoggedIn (req, res, next) {
     }
 };
 
-module.exports = routeProtectors;
+module.exports = middlewareRouteProtectors;

@@ -21,9 +21,9 @@
         </div>
 
         {{!-- If logged in --}}
-        {{#if session_logged}}
+        {{#if locals_session_logged}}
             <li><a id="link-post-image" href="/post-image">Post image</a></li>
-            <li><a id="link-username" href="/">Welcome {{session_username}}</a></li>
+            <li><a id="link-username" href="/user/{{locals_session_username}}">Welcome {{locals_session_username}}</a></li>
             <li><a id="link-logout" >Log out</a></li> {{!-- No href because JS should handle that in --}}
 
         {{!-- If Logged out --}}

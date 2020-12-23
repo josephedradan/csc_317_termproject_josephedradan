@@ -76,7 +76,7 @@ async function insertUserToDatabase(username, email, passwordHashed) {
 
     // Query insert
     let baseSQLQueryInsert =
-        "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
+        "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_date_created`) VALUES (?, ?, ?, now());";
 
     let [rowsResultInsertUser, fields] = await databaseConnector.execute(baseSQLQueryInsert, [
         username,

@@ -5,7 +5,7 @@ Github: https://github.com/josephedradan
 Date created: 12/18/2020
 
 Purpose:
-    Handles postimage.hs js
+    Handles post-image.hbs
 
 Details:
 
@@ -25,12 +25,12 @@ Reference:
 // Uncomment this if you want the hinting for axios (This should be uncommented for the developer)
 // const axios = require('axios');
 
-function handlerFormPost() {
-    const form_block = document.getElementById('post-image');
+function initializePostImage() {
+    let formBlock = document.getElementById('post-image');
 
-    form_block.onsubmit = function (event) {
+    formBlock.onsubmit = function (event) {
         event.preventDefault(); // Prevent default behavior
-        let form_block_body = new FormData(form_block);
+        let formBlockBody = new FormData(formBlock);
 
         // // Using Fetch
         // fetch('/posts/createPost', {
@@ -62,7 +62,7 @@ function handlerFormPost() {
 
         // Using axios
         axios('/posts/createPost', {
-            data: form_block_body,
+            data: formBlockBody,
             method: "POST"
         })
         .then((jsonData) => {
@@ -84,12 +84,12 @@ function handlerFormPost() {
             location.replace(jsonDataData.redirect);
 
         }).catch(err => {
-            console.log(`Error: Axios Get Error for ${handlerFormPost.name}`)
+            console.log(`Error: Axios Get Error for ${initializePostImage.name}`)
             console.log(err);
         });
     }
 }
 function runPostImage() {
-    handlerFormPost();
+    initializePostImage();
 }
 runPostImage();

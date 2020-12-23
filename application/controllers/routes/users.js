@@ -44,10 +44,13 @@ const UserError = require("../helpers/error/user_error");
 // Asynchronous Function Middleware Handler
 const asyncFunctionHandler = require("../decorators/async_function_handler");
 
-// const mySQLPrinter = require('../helpers/my_sql_printer');
+// middlewareValidateRegistration
+const middlewareValidateRegistration = require(`../middleware/middleware_registration_validation`)
+
+const { body, validationResult } = require('express-validator');
 
 // Handle registration posting
-routerUsers.post("/register", asyncFunctionHandler(middlewareRegister));
+routerUsers.post("/register", [body("email").isEmail()], asyncFunctionHandler(middlewareValidateRegistration), asyncFunctionHandler(middlewareRegister));
 
 async function middlewareRegister(req, res, next) {
     /* 
@@ -61,97 +64,109 @@ async function middlewareRegister(req, res, next) {
     // Body of the POST
     debugPrinter.printDebug(req.body);
 
-    // TODO: DO VALIDATION
+    const errors = validationResult(req);
 
-    // Get useful data from the post request in meaningful names
-    let username = req.body["username"];
-    let email = req.body["email"];
-    let password1 = req.body["password-1"];
-    let password2 = req.body["password-1"];
-    let checkAge = req.body["checkbox-age"];
-    let checkTOS = req.body["checkbox-tos"];
-
-    // TODO: THIS IS THAT THING THE DATABASE THAT DOES SOMETHING IDK FIGURE IT OUT!
-    // let active = 1;
-
-    // Query insert
-    // let baseSQLQueryInsert =
-    //     "INSERT INTO users (`users_username`, `users_email`, `users_password`, `users_created`) VALUES (?, ?, ?, now());";
-
-    // Check if the Username already exists
-    const promiseUsername = usersModel.getUserDataAllFromUsername(username);
-
-    // Check if the Email already exists
-    const promiseEmail = usersModel.getUserEmailDataAllFromEmail(email);
-
-    // Call promises concurrently
-    [resultSQLQueryUsername, resultSQLQueryEmail] = await Promise.all([promiseUsername, promiseEmail])
-
-    // Result contains the rows from SQL query and the fields object
-    rowsResultUsername = resultSQLQueryUsername[0];
-    rowsResultEmail = resultSQLQueryEmail[0];
-
-    // Success in finding a user name and Email in the database (If you find something in the database then either one already exists)
-    // debugPrinter.printSuccess(rowsResultUsername);
-    // debugPrinter.printSuccess(rowsResultEmail);
-
-    // Check username exists in database then check its length
-    if (rowsResultUsername && rowsResultUsername.length) {
-        let stringFailure = `Username: ${username} is taken!`;
-        debugPrinter.printError(stringFailure);
+    // If Errors exist
+    if (!errors.isEmpty()) { 
+        
         throw new UserError(
             400,
-            stringFailure,
+            errors,
             "/registration",
         );
+    } 
+    
+    // If no errors exist
+    else {
+
+        // Get useful data from the post request using meaningful names
+        let username = req.body["username"];
+        let email = req.body["email"];
+        let password1 = req.body["password-1"];
+        let password2 = req.body["password-1"];
+        let checkAge = req.body["checkbox-age"];
+        let checkTOS = req.body["checkbox-tos"];
+        
+        debugPrinter.printSuccess(checkAge);
+        debugPrinter.printSuccess(checkTOS);
+
+        // If online i guess
+        // let active = 1;
+
+        // Check if the Username already exists
+        const promiseUsername = usersModel.getUserDataAllFromUsername(username);
+
+        // Check if the Email already exists
+        const promiseEmail = usersModel.getUserEmailDataAllFromEmail(email);
+
+        // Call promises concurrently
+        [resultSQLQueryUsername, resultSQLQueryEmail] = await Promise.all([promiseUsername, promiseEmail])
+
+        // Result contains the rows from SQL query and the fields object
+        rowsResultUsername = resultSQLQueryUsername[0];
+        rowsResultEmail = resultSQLQueryEmail[0];
+
+        // Success in finding a user name and Email in the database (If you find something in the database then either one already exists)
+        // debugPrinter.printSuccess(rowsResultUsername);
+        // debugPrinter.printSuccess(rowsResultEmail);
+
+        // Check username exists in database then check its length
+        if (rowsResultUsername && rowsResultUsername.length) {
+            let stringFailure = `Username: ${username} is taken!`;
+            debugPrinter.printError(stringFailure);
+            throw new UserError(
+                400,
+                stringFailure,
+                "/registration",
+            );
+        }
+
+        // Check Email exist in database then check its length
+        if (rowsResultEmail && rowsResultEmail.length) {
+            let stringFailure = `Email: ${email} is in use!`;
+            debugPrinter.printError(stringFailure);
+            throw new UserError(
+                400,
+                stringFailure,
+                "/registration",
+            );
+        }
+
+        // Hash password
+        passwordHashed = await bcrypt.hash(password1, 10);
+
+        // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES LIKE IN PYTHON
+
+        let stringSuccess1 = "Executing Registration Query";
+        debugPrinter.printSuccess(stringSuccess1);
+        // databaseConnector.execute(baseSQLQueryInsert, [
+        //     username,
+        //     email,
+        //     passwordHashed,
+        // ]);
+        usersModel.insertUserToDatabase(username, email, passwordHashed);
+
+        let stringSuccess2 = `Query Successful`;
+        debugPrinter.printSuccess(stringSuccess2);
+
+        // Flash (USE THIS IF flash DOES NOT BREAK express-sessions)
+        // req.flash('alert_account_creation', "Your can now log in");
+
+        // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
+        res.locals.locals_redirect_last = "/login";
+
+        /* 
+        Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
+        Modify the res.json for the user
+    
+        VERY IMPORTANT NOTE:
+            THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
+        */
+        // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.locals.locals_redirect_last })
+
+        // Call next middleware (Will probably call saveSessionThenRedirect();)
+        next();
     }
-
-    // Check Email exist in database then check its length
-    if (rowsResultEmail && rowsResultEmail.length) {
-        let stringFailure = `Email: ${email} is in use!`;
-        debugPrinter.printError(stringFailure);
-        throw new UserError(
-            400,
-            stringFailure,
-            "/registration",
-        );
-    }
-
-    // Hash password
-    passwordHashed = await bcrypt.hash(password1, 10);
-
-    // TODO: MAKE A WRAPPER/FUNCTION TYPE FOR HANDLING QUERIES LIKE IN PYTHON
-
-    let stringSuccess1 = "Executing Registration Query";
-    debugPrinter.printSuccess(stringSuccess1);
-    // databaseConnector.execute(baseSQLQueryInsert, [
-    //     username,
-    //     email,
-    //     passwordHashed,
-    // ]);
-    usersModel.insertUserToDatabase(username, email, passwordHashed);
-
-    let stringSuccess2 = `Query Successful`;
-    debugPrinter.printSuccess(stringSuccess2);
-
-    // Flash (USE THIS IF flash DOES NOT BREAK express-sessions)
-    // req.flash('alert_account_creation', "Your can now log in");
-
-    // Set last redirect URL (This is form the normal way of handling Post requests with standard form html)
-    res.locals.locals_redirect_last = "/login";
-
-    /* 
-    Stuff to return to the user who did a post request (Basically, if the post was handled by frontend JS)
-    Modify the res.json for the user
-
-    VERY IMPORTANT NOTE:
-        THIS SHOULD ONLY BE UNCOMMENTED IF THIS GET/POST REQUEST IS HANDLED BY FRONTEND JS
-    */
-    // res.json({ status: 200, message: "User Creation was Successful!", "redirect": res.locals.locals_redirect_last })
-
-    // Call next middleware (Will probably call saveSessionThenRedirect();)
-    next();
-
 }
 
 // Handle /login

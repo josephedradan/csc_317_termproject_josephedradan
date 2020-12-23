@@ -33,12 +33,13 @@ const usersModel = require('../../models/model_users')
 
 // Custom user error class
 const UserError = require("../helpers/error/user_error");
+const PostError = require('../helpers/error/post_error');
 
 // Asynchronous Function Middleware Handler
 const asyncFunctionHandler = require("../decorators/async_function_handler");
 
 
-routerComments.post('/create', asyncFunctionHandler(middlewareCreateComment))
+routerComments.post('/createComment', asyncFunctionHandler(middlewareCreateComment))
 
 async function middlewareCreateComment(req, res, next) {
     /* 
@@ -54,29 +55,41 @@ async function middlewareCreateComment(req, res, next) {
 
         let commentUsername = req.session.session_username;
 
-        // Needs to be sequential
-        let rowsResultUserID = await usersModel.getUserIDFromUserName(commentUsername);
+        // Print username
+        // debugPrinter.printSuccess("Username");
+        // debugPrinter.printDebug(commentUsername);
 
-        debugPrinter.debugPrinter(rowsResultUsername);
+        // Needs to be sequential
+        let [rowsResultUserID, fields] = await usersModel.getUserIDFromUserName(commentUsername);
+        
+        // Print database username
+        // debugPrinter.printSuccess("rowsResultUserID");
+        // debugPrinter.printDebug(rowsResultUserID);
 
         // If username does not exist
-        if (!rowsResultUsername && !rowsResultUsername.length) {
+        if (!rowsResultUserID && !rowsResultUserID.length) {
             throw new Error(
                 `Username does not exist in the database: ${commentUsername}`
             );
         }
 
-        let commentUserID = rowsResultUserID["users_id"];
+        let commentUserID = rowsResultUserID[0]["users_id"];
 
         let commentPostID = req.body["comment_post_id"];
 
-        let commentComment = req.body["comment_comment"]
+        let commentComment = req.body["comment_comment"];
 
-        let rowsResultInsertComment = await commentsModel.insertCommentToDatabase(commentUserID, commentPostID, commentComment);
+        // Debug printing
+        // debugPrinter.printSuccess("Input by Post");
+        // debugPrinter.printDebug(commentUserID);
+        // debugPrinter.printDebug(commentPostID);
+        // debugPrinter.printDebug(commentComment);
+
+        let [rowsResultInsertComment, fields2] = await commentsModel.insertCommentToDatabase(commentUserID, commentPostID, commentComment);
 
         // Debug if the comment the response after the comment was added to the database
-        debugPrinter.printDebug(rowsResultInsertComment);
-
+        debugPrinter.printSuccess("Insert Comment")
+        // debugPrinter.printDebug(rowsResultInsertComment);
 
         // Check if query insert comment was successful
         if (rowsResultInsertComment && rowsResultInsertComment.affectedRows) {
@@ -84,7 +97,7 @@ async function middlewareCreateComment(req, res, next) {
             debugPrinter.printSuccess(stringSuccess);
         } else {
 
-            throw new PostError(400, `File uploaded by ${req.session.session_username} was not Successful!`, '/postImage');
+            throw new PostError(400, `Comment by ${req.session.session_username} was not Successful!`, "/post/" + commentPostID);
         };
 
         // Get the url of the post

@@ -1,10 +1,31 @@
 <div class="comment-container-parent">
+    <h2 class="comment-container-parent-title">Comments</h2>
     <div class="comment-container-comments">
-        {{}}
-
-
+        {{#each render_post_comments}}
+            <div class="comment-container-body">
+                <a href="/user/{{this.users_username}}" class="username-link">
+                    <h3 class="comment-content-username">{{this.users_username}}</h3>
+                </a>
+                <h5 class="comment-content-date-created">{{this.comments_date_created}}</h5>
+                <p class="comment-content-comment">{{this.comments_comment}}</p>
+            </div>
+        {{/each}}
     </div>
-    <div class="comment-container-comment">
-
+    <div class="comment-container-comment-box">
+        <textarea 
+        id="comment-box-textarea" 
+        class"form-control" 
+        aria-label="With textarea" 
+        placeholder="Enter comment here!"></textarea>
+        <button id="comment-button"><i class="fa fa-search"></i></button>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event)=>{
+        document.querySelectorAll('h5[class=comment-content-date-created]').forEach((postedDate) =>{
+            postedDate.textContent = new Date(postedDate.textContent).toLocaleDateString();
+        });
+    });
+</script>

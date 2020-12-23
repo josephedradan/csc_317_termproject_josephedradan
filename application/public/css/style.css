@@ -336,8 +336,10 @@ form > fieldset > button {
 
 
 
-
-
+.username-link{
+    color: inherit;
+    font-size: inherit;
+}
 
 .post-container-parent {
   background: #dae9f0;
@@ -382,7 +384,43 @@ form > fieldset > button {
     max-height: 100%;
 }
 
+.comment-container-parent{
+    padding: 0px 100px 0px 100px;
+}
 
+.comment-container-parent-title{
+
+}
+.comment-container-comments{
+    
+}
+.comment-container-body{
+
+}
+.comment-content-username{
+
+}
+.comment-content-date-created{
+
+}
+.comment-content-comment{
+
+}
+
+
+.comment-container-comment-box{
+
+}
+
+#comment-box-textarea{
+    width: 100%;
+    display: block;
+    resize: vertical;
+}
+
+#comment-submit{
+
+}
 
 
 

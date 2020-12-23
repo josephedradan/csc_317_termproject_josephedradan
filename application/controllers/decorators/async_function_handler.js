@@ -129,7 +129,7 @@ function asyncFunctionHandler(functionGiven, debugPrinterFunction = "printMiddle
                     // Handle all other errors by passing it over the the Error handling middleware
                     else {
                         debugPrinter.printError("Asynchronous Error is not Custom!")
-
+                        debugPrinter.printError(err);
                     }
 
                 });
