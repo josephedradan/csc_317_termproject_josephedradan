@@ -28,3 +28,6 @@ Please follow the instructions below and fill in the information requested when 
 
 ## Database SQL script location
 csc317-termproject-josephedradan\application\config\csc317db.sql
+
+## Extra credit
+If you click on a Username it will show you all their posts.

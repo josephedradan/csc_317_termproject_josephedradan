@@ -1,27 +1,30 @@
-{{!-- 
+{{!--
 
 Notes:
-    If the HBS code below is commented out then frontend JS is handling the rendering of the cards so I can have 1 Consistent HTML template
-    which will be inside the getHTMLHomeCards() function in page_load_post.js in the frontend js sent to the user.
+If the HBS code below is commented out then frontend JS is handling the rendering of the cards so I can have 1
+Consistent HTML template
+which will be inside the getHTMLHomeCards() function in page_load_post.js in the frontend js sent to the user.
 
- --}}
+--}}
 
 {{#each locals_rows_result_get_recent_posts_posts}}
-    {{!-- Every post can be individually identified via id_NUMBER --}}
-    <div id="id_{{this.posts_id}}" class="card-container-parent">
-        <div class="card-container-body-media">
-            <a href="/post/{{this.posts_id}}">
-                <img class="card-content-body-media" src="{{this.posts_path_thumbnail}}" />
-            </a>
-        </div>
-        <div class="card-container-body">
-            <h3 class="card-content-title">{{this.posts_title}}</h5>
+{{!-- Every post can be individually identified via id_NUMBER --}}
+<div id="id_{{this.posts_id}}" class="card-container-parent">
+    <div class="card-container-body-media">
+        <a href="/post/{{this.posts_id}}">
+            <img class="card-content-body-media" src="{{this.posts_path_thumbnail}}" />
+        </a>
+    </div>
+    <div class="card-container-body">
+        <h3 class="card-content-title">{{this.posts_title}}</h5>
             <h5 class="card-content-date-created">{{this.posts_created}}</h5>
-            <h5 class="card-content-author">Author: {{this.users_username}}</h5>
+            <a href="/user/{{this.users_username}}">
+                <h5 class="card-content-author">{{this.users_username}}</h5>
+            </a>
             <h5 class="card-content-description-title">Description: </h5>
             <p class="card-content-description">{{this.posts_description}}</p>
             {{!-- Link to the actual post --}}
             {{!-- <a href="/post/{{this.posts_id}}" class="anchor-button">More Details</a> --}}
-        </div>
     </div>
+</div>
 {{/each}}
