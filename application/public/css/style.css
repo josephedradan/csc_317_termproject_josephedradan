@@ -34,7 +34,10 @@ html {
 }
 
 
+a:hover{
+    color: #cf2a0e;
 
+}
 
 
 body {
@@ -56,7 +59,7 @@ body {
 }
 
 #body-container {
-  background: grey;
+  background: black;
   /* background-image: linear-gradient(black, grey); */
     /*Don't use flex it will overlap*/
   /* display: grid;  */
@@ -94,10 +97,13 @@ body {
     align-items: center;
     /* height: 85vh; */  /* Don't use use*/
     height: 100%;
+
 }
 
 .div-container-content {
     padding: 25px;
+    padding-top: 0px;
+    margin-top: 0px;
 }
 
 .div-standard{
@@ -119,122 +125,184 @@ body {
 
 /* Navbar stuff */
 
+
+
 header {
-  display: flex;
-
-  color: white;
-  background: black;
-
-  /* width: 100%; */
-  /* height: 100px; */
-
-  justify-content: flex-end;
-  align-items: center;
-
-  margin: 0;
-  padding: 0;
-}
-header > li, a, button{
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-header > ul{
-  margin: 0;
-
-  /* TODO: CHANGE MY VALUE TO SOMETHING COOLER */
-  padding: 10px;
-}
-
-.header-title {
-  /* font-size: 4em; */
-
-  margin: 0;
-  margin-right: auto;
-
-  padding-left: 20px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  padding-right: 20px;
-
-}
-.logo{
-  font-style: italic;
-  padding: 10px;
-  margin: 0;
-  margin-right: auto;
-
-  font-size: 4em;
-  font-weight: 600;
-}
-
-.nav-links{
-  list-style: none;
-
-}
-
-.nav-links li{
-  /* Side by side */
-  display: inline-block;
-  padding: 0px 80px;
-
-}
-
-.nav-links li a{
-  transition: all 0.3s eas 0s;
-}
-
-.nav-links li a:hover{
-  color: red;
-}
-
-
-.div-search{
-    background: #0b7dda;
-    margin-right: auto;
-}
-.div-search button {
-
-    margin-right: auto;
-    float: left;
-    width: 20%;
-    padding: 10px;
-    background: #2196F3;
-    color: white;
-    font-size: 17px;
-    border: 1px solid grey;
-    border-left: none;
-    cursor: pointer;
-}
-.div-search input {
-    margin-right: auto;
-    padding: 10px;
-    font-size: 17px;
-    border: 1px solid grey;
-    float: left;
-    width: 80%;
-    background: #f1f1f1;
-}
-
+    display: flex;
   
-#count-size > p{
-  margin: 0px;
-}
+    color: white;
+    background: black;
+  
+    /* width: 100%; */
+    /* height: 100px; */
+  
+    justify-content: flex-end;
+    align-items: center;
+  
+    margin: 0;
+    padding: 0;
+  }
+  header > li, a, button{
+    color: white;
+    font-size: 25px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  header > a:hover{
+      color: #cf2a0e;
+  }
+  
+  
+  nav {
+      /* width: 100%; */
+      padding: 0px;
+      border-left: none;
+      border-right: none;
 
-#count-size {
-  text-align: right;
-  font-size: 20px;
-  margin-right: 50px;
-}
-
-
-
-
-
-
-
+  }
+  
+  
+  .logo{
+      flex: 1;
+  
+      color: white;
+      font-style: italic;
+      padding: 10px;
+      margin: 0;
+      /* margin-right: auto; */
+  
+      font-size: 4em;
+      font-weight: 600;
+  }
+  
+  .header-title {
+      /* font-size: 4em; */
+    
+      /* margin: 0; */
+      /* margin-right: auto; */
+    
+      padding-left: 20px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-right: 20px;
+    
+      cursor: pointer;
+    }
+  
+  .nav-items{
+      display:inline-flex;
+  }
+  
+  .nav-links{
+    /* list-style: none; */
+  
+    display: flex;
+      list-style: none;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  .nav-links li{
+    /* Side by side */
+    display: inline-block;
+    padding: 0px 80px;
+  
+  }
+  
+  .nav-links li a{
+    transition: all 0.3s eas 0s;
+  }
+  
+  .nav-links li a:hover{
+    color: #cf2a0e;
+  }
+  
+  #link-logout{
+      cursor: pointer;
+  }
+  
+  
+  .div-search{
+      /* background: black; */
+      /* margin-right: auto; */
+      /* display:grid; */
+  
+  }
+  .div-search button:hover{
+      background: #cf2a0e;
+    }
+  
+  .div-search button {
+  
+      /* float: left; */
+  
+      /* margin-right: auto; */
+      /* float: right; */
+          /* border: 0px solid grey; */
+  
+      /* width: 20%;
+      padding: 10px;
+      background: grey;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+       */
+  }
+  
+  
+  #search-button{
+      margin: 0px;
+  
+  
+  
+      width: 20%;
+      padding: 5px;
+      /* background: grey; */
+      color: white;
+      font-size: 17px;
+  
+      /* display:flex; */
+  
+      /* border: 1px solid grey; */
+      cursor: pointer;
+  }
+  #search-button:hover{
+      /* background: #cf2a0e; */
+      color:  #cf2a0e;
+  
+  }
+  
+  .div-search input {
+      /* margin-right: auto; */
+      /* width: 80%; */
+      /* 
+      padding: 10px;
+      font-size: 17px;
+      border: 1px solid grey;
+      background: #f1f1f1; 
+      */
+  }
+  
+  #search-text{
+      margin: 0px;
+  
+      padding: 5px;
+      font-size: 17px;
+      border: 1px solid grey;
+      background: #f1f1f1;
+  }
+    
+  #count-size > p{
+    margin: 0px;
+  }
+  
+  #count-size {
+    text-align: right;
+    font-size: 20px;
+    margin-right: 50px;
+  }
 
 
 
@@ -258,16 +326,28 @@ header > ul{
 }
 
 fieldset{
+    border: thin solid white;
+    margin:  20px;
+    padding: 2em;
+    width: 75%;
 }
-
+legend {
+	font-weight: bold;
+  float: left;
+  margin-bottom: .5em;
+  width: 100%;
+}
 form {
   font-size: 2em;
+  color: white;
 }
 
 form > fieldset {
   border-radius: 5px;
   border: 0;
-  background: #f1f7ff;
+  /* background: white; */
+  opacity: 1;
+
 }
 form > fieldset > legend {
   font-size: 2em;
@@ -308,11 +388,12 @@ form > fieldset > textarea {
 
 form > fieldset > button {
   font-family: inherit;
-  font-size: inherit;
+  font-size: 30px;
+  font-weight: 500;
+
   color: white;
   background-color: black;
   cursor: pointer;
-  font-weight: 400;
   outline: 0;
   border: 0;
   /* border-radius: inherit;  */
@@ -325,6 +406,9 @@ form > fieldset > button {
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+form > fieldset > button:hover{
+    color: #cf2a0e;
 }
 
 
@@ -342,7 +426,8 @@ form > fieldset > button {
 }
 
 .post-container-parent {
-  background: #dae9f0;
+    color: white;
+  background: #2e3035;
   padding-top: 25px;
   padding-right: 25px;
   padding-left: 25px;
@@ -360,6 +445,7 @@ form > fieldset > button {
   font-size: 3em;
   margin: inherit;
   padding: inherit;
+  width: 100%;
 }
 .post-content-header-author {
   margin: inherit;
@@ -379,46 +465,84 @@ form > fieldset > button {
   max-height: 100%;
 }
 
-.post-container-body {
+.post-content-body {
     max-width: 100%;
     max-height: 100%;
+    padding: 0px 100px 0px 100px;
 }
 
 .comment-container-parent{
     padding: 0px 100px 0px 100px;
+    display: grid;
 }
 
 .comment-container-parent-title{
 
 }
 .comment-container-comments{
-    
+    margin-bottom: 30px;
 }
 .comment-container-body{
 
 }
 .comment-content-username{
-
+    margin-bottom: 0;
 }
 .comment-content-date-created{
-
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: 500;
 }
 .comment-content-comment{
+    margin-left: 10px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
 
 }
 
 
 .comment-container-comment-box{
-
+    display: flexbox;
 }
 
 #comment-box-textarea{
-    width: 100%;
+    width:80%;
     display: block;
     resize: vertical;
+    font-size: 20px;
+    float: left;
+
+    padding: 0;
+    margin: 0;
 }
 
-#comment-submit{
+#comment-button{
+    margin: 0px;
+    padding: 10px;
+
+    width: 18%;
+    /* padding: 10px; */
+    
+    /* background: grey; */
+    font-size: 25px;
+    font-weight: 500;
+    /* display:flex; */
+
+    text-align: left;
+
+    /* border: 1px solid grey; */
+    cursor: pointer;
+    float: right;
+    vertical-align: bottom;
+    
+    height: 100%;
+
+}
+
+#comment-button :hover{
+    color: #cf2a0e;
+
 
 }
 
@@ -465,7 +589,7 @@ Home page for loading the images and stuff
   TODO: figure out way to auto resize card-image and its container
   
   */
-  width: auto;
+  /* width: auto; */
   /* width: 30%; */
   /* float: left; */
   /* float: left; */
@@ -473,6 +597,23 @@ Home page for loading the images and stuff
   /* height: 100px; */
   /* object-fit: cover; */
   /* flex-basis: 27%; */
+
+
+  float: left;
+  margin-left: 10px;
+  margin-top: 10px;
+  background-color: rgb(29, 29, 29);
+  /* height: 500px; */
+
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.01);
+  /* filter: drop-shadow(0px 0px 5px); */
+  /* transition: all 0.5s ease; */
+  /* opacity: 1; */
+
+  color: white;
+
+  font-size: 20px;
 }
 
 .card-container-body-media{
@@ -480,24 +621,46 @@ Home page for loading the images and stuff
 }
 
 .card-content-body-media{
-  /* width: 30%; */
-  /* width: 30%; */
-  /* height: 30%; */
+    padding: 10px;
+    margin: 0px;
+
 }
 .card-container-body{
+    margin: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+
 
 }
 .card-content-title{
-
+    margin: inherit;
+    padding-top: inherit;
 }
 .card-content-date-created{
-    
+    margin: inherit;
+    padding-left: 20px;
+    padding-top: inherit;
+
 }
 .card-content-author{
+    margin: inherit;
+    padding-left: 20px;
+    padding-top: inherit;
 
+}
+.card-content-description-title{
+    margin: inherit;
+    padding-left: 20px;
+    padding-top: inherit;
 }
 
 .card-content-description{
+    margin: inherit;
+    padding-left: 30px;
+    padding-top: inherit;
+    font-size: 15px;
 
 }
 

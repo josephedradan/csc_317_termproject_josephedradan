@@ -296,8 +296,8 @@ async function middlewareUserPosts(req, res, next) {
 
     // Query Database given search term
     let [rowsResultGePostsByUsername, fields] = await postsModel.getPostsByUsername(username);
+    // debugPrinter.printDebug(rowsResultGePostsByUsername);
 
-    debugPrinter.printSuccess(rowsResultGePostsByUsername);
     res.locals.locals_rows_result_get_recent_posts_posts = rowsResultGePostsByUsername;
 
     // Ghetto solution using home as the template

@@ -86,9 +86,6 @@ async function middlewareRegister(req, res, next) {
         let password2 = req.body["password-1"];
         let checkAge = req.body["checkbox-age"];
         let checkTOS = req.body["checkbox-tos"];
-        
-        debugPrinter.printSuccess(checkAge);
-        debugPrinter.printSuccess(checkTOS);
 
         // If online i guess
         // let active = 1;

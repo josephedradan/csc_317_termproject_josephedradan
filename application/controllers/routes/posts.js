@@ -123,7 +123,7 @@ async function createPost(req, res, next) {
     // TODO: VALIDATE  [postTitle, postDescription, postPathFile, postPathThumbnail, fk_user_id]
 
     // Make a thumbnail of postPathFile (Needs to be sequential)
-    await sharp(postPathFile).resize(200).toFile(postPathThumbnail);
+    await sharp(postPathFile).resize(500).toFile(postPathThumbnail);
 
     // debugPrinter.printSuccess(postPathThumbnail);
     // debugPrinter.printSuccess(postPathFile);

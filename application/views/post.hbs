@@ -19,3 +19,10 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', (event)=>{
+        document.querySelectorAll('h5[class=post-content-header-date]').forEach((postedDate) =>{
+            postedDate.textContent = new Date(postedDate.textContent).toLocaleDateString();
+        });
+    });
+</script>

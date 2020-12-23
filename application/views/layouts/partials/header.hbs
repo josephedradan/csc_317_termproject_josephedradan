@@ -3,38 +3,47 @@
 
 
     Reference:
-        Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
-            https://www.youtube.com/watch?v=PwWHL3RyQgk
+    Navbar CSS Tutorial: 3 Ways to Create a Navigation Bar with Flexbox
+    https://www.youtube.com/watch?v=PwWHL3RyQgk
 
-        CSC 317 Term Project Log out
-            https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.bes
+    CSC 317 Term Project Log out
+    https://www.youtube.com/watch?v=4yXePB7QLo0&feature=youtu.bes
 
     --}}
     {{!-- <h1 class="header-title"></h1> --}}
     <a class="logo" href="/">Deep Dark Fantasies</a>
-    <ul class="nav-links">
-        {{!-- <li><a href="home">Home</a></li> --}}
 
-        <div class="div-search">
-            <input id="search-text" name="div-input-search-text" type="text">
-            <button id="search-button"><i class="fa fa-search"></i></button>
-        </div>
+    <nav>
+        <ul class="nav-links">
 
-        {{!-- If logged in --}}
-        {{#if locals_session_logged}}
-            <li><a id="link-post-image" href="/post-image">Post image</a></li>
-            <li><a id="link-username" href="/user/{{locals_session_username}}">Welcome {{locals_session_username}}</a></li>
-            <li><a id="link-logout" >Log out</a></li> {{!-- No href because JS should handle that in --}}
 
-        {{!-- If Logged out --}}
-        {{else}}
-            <li><a id="link-registration" href="/registration">Registration</a></li>
-            <li><a id="link-login" href="/login">Log in</a></li>
-        {{/if}}
+            <div class="nav-itemes">
+                {{!-- <li><a href="home">Home</a></li> --}}
+                <li>
+                    <input id="search-text" name="div-input-search-text" type="text">
+                    <span id="search-button"><i class="fa fa-search"></i></span>
+                </li>
 
-        {{!-- <li><a href="imagepost">Image Post</a></li> --}}
+                {{!-- If logged in --}}
+                {{#if locals_session_logged}}
+                <li><a id="link-post-image" href="/post-image">Post image</a></li>
+                <li><a id="link-username" href="/user/{{locals_session_username}}">{{locals_session_username}}</a>
+                </li>
+                <li><a id="link-logout">Log out</a></li> {{!-- No href because JS should handle that in --}}
 
-    </ul>
+                {{!-- If Logged out --}}
+                {{else}}
+                <li><a id="link-registration" href="/registration">Registration</a></li>
+                <li><a id="link-login" href="/login">Log in</a></li>
+                {{/if}}
+
+            </div>
+
+
+            {{!-- <li><a href="imagepost">Image Post</a></li> --}}
+        </ul>
+    </nav>
+
     {{!-- <p>
         GARBAGE TESTING
     </p> --}}
