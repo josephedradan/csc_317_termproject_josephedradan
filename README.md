@@ -25,3 +25,6 @@ Please follow the instructions below and fill in the information requested when 
 ## Run Instructions
 1. ``nodemon``
 2. 127.0.0.1:3000
+
+## Database SQL script location
+csc317-termproject-josephedradan\application\config\csc317db.sql
