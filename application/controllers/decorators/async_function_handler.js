@@ -7,7 +7,7 @@ Date created:
 Purpose:
     Async wrapper, similar style to pythons
 
-    idk if will ok but ok
+    idk if will work but ok
 Details:
 
 Description:
