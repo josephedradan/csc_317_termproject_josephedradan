@@ -31,3 +31,7 @@ csc317-termproject-josephedradan\application\config\csc317db.sql
 
 ## Extra credit
 If you click on a Username it will show you all their posts.
+
+# Video Demo
+[![SFSU CSC 317 Term Project - Joseph Edradan](https://img.youtube.com/vi/IZR0ooamxOQ/0.jpg)](https://www.youtube.com/watch?v=IZR0ooamxOQ)
+
