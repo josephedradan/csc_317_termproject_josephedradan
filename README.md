@@ -36,5 +36,3 @@ If you click on a Username it will show you all their posts.
 [![SFSU CSC 317 Term Project - Joseph Edradan](https://img.youtube.com/vi/IZR0ooamxOQ/0.jpg)](https://www.youtube.com/watch?v=IZR0ooamxOQ)
 
 __Original repo name__: csc317-termproject-josephedradan
-
-csc_317_termproject_josephedradan
